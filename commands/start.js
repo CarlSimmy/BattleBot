@@ -1,7 +1,9 @@
 module.exports = {
   run: ( Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom ) => {
+
     gameStatus.started = true;
-    let gameInterval = setInterval(() => {
+
+    function startGameRound() {
       let event = randomFrom(events); // A random event for this round.
       let eventPlayers = []; // All players for the current event.
       let eventTargetIdxs = []; // All targets for the current event, both + and - damage.
@@ -103,7 +105,6 @@ module.exports = {
           effectedTargetsMessages.push(`${targetName}  ${event.healthChange[0] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[0])}HP (${targetHealth})* ${healthEmoji}`);
         }
       }
-
       
       /* Output event and effected players */
       message.channel.send(roundMessage);
@@ -128,7 +129,6 @@ module.exports = {
       /* If everyone dies */
       if ( playerList.length <= 0 ) {
         gameStatus.started = false;
-        clearInterval(gameInterval);
         playerList.length = 0;
         deadPlayers.length = 0;
         return message.channel.send('**Looks like there were no winners this round!**');
@@ -137,7 +137,6 @@ module.exports = {
       /* If 1 player is left standing as the winner */
       if ( playerList.length === 1 ) {
         gameStatus.started = false;
-        clearInterval(gameInterval);
         let winnerEmbed = new Discord.RichEmbed()
                             .setColor('#3bd82d')
                             .setAuthor(playerList[0].name)
@@ -147,10 +146,13 @@ module.exports = {
                             .setFooter('WINNER');
         playerList.length = 0;
         deadPlayers.length = 0;
-        return message.channel.send(winnerEmbed); 
+        return message.channel.send(winnerEmbed);        
       }
 
+      setTimeout(startGameRound, 6000); // Run itself every 6 serconds.
       return message.channel.send('_ _'); // Outputs an empty line in Discord for some reason.
-    }, 6000);
+    }
+
+    startGameRound(); // Initial start of the game round.
   }
 };
