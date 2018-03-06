@@ -1,5 +1,5 @@
 module.exports = {
-  run: ( Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom ) => {
+  run: ( Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom ) => {
 
     gameStatus.started = true;
 
@@ -11,7 +11,7 @@ module.exports = {
       let playersDied = 0; // To check if a player died this round to type it out.
 
       /* Get random players for the event */
-      if ( (event.targets > playerList.length) && event.targets !== 'all' ) return; // If there are more targets than active players, return.
+      if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; } // If there are more targets than active players, ignore and restart the game loop.
 
       if ( event.targets !== 'all' ) {
         for ( let i = 0; i < event.targets; i++ ) {

@@ -13,12 +13,14 @@ const addbot    = require('./commands/addbot.js');
 const players   = require('./commands/players.js');
 const reset     = require('./commands/reset.js');
 const start     = require('./commands/start.js');
+const rematch   = require('./commands/rematch.js');
 
 /* Creating and authorizing bot */
 const bot = new Discord.Client({disableEveryone: true});
 bot.login(config.token);
 
 /* __Global variables to track the state of the game__ */
+var prevPlayerList = []; // Used for rematch functionality.
 var playerList = [];
 var deadPlayers = [];
 var gameStatus = { started: false };
@@ -90,6 +92,16 @@ bot.on('message', async message => {
   if ( command === 'start' ) {
     if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`);
     if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`);
-    start.run(Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom);
+    prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
+    start.run(Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom);
+  }
+
+  /* COMMAND: Start a new game with the same players */
+  if ( command === 'rematch' ) {
+    if ( gameStatus.started ) return message.channel.send(`You'll have plenty of time for a rematch when the current game has ended ${message.author}!`);
+    if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`);
+    message.channel.send('**Starting a new game with the same players!**');
+    playerList = JSON.parse(JSON.stringify(prevPlayerList));
+    start.run(Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom);
   }
 });
