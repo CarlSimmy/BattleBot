@@ -13,7 +13,6 @@ const addbot    = require('./commands/addbot.js');
 const players   = require('./commands/players.js');
 const reset     = require('./commands/reset.js');
 const start     = require('./commands/start.js');
-const rematch   = require('./commands/rematch.js');
 
 /* Creating and authorizing bot */
 const bot = new Discord.Client({disableEveryone: true});
