@@ -1,4 +1,4 @@
-module.exports = ( Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom ) => {
+module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom ) => {
   gameStatus.started = true;
 
   function startGameRound() {
