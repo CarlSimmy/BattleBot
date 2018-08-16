@@ -22,9 +22,10 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
         eventPlayers.push(player);
       }
     } else {
+      /* Copy array as temporary players and effected so they won't mirror the real playerList which means they won't be removed the same round and can be read */
       let tempPlayers = [];
       let tempEffected = [];
-      /* Set temporary players and effected so they won't mirror playerList which means they won't be removed the same round and can be read */
+
       playerList.forEach((player, idx) => {
         tempPlayers.push(player);
         tempEffected.push(idx);
@@ -33,28 +34,24 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
       event.effectedTargets = tempEffected;
     }
 
-    if ( event.effectedTargets.length > 1 ) {
-      for ( let i = 0; i < event.effectedTargets.length; i++ ) {
-        eventTargetIdxs.push(playerList.indexOf(eventPlayers[event.effectedTargets[i]])); // Push the playerList index of the targeted player so we don't have to check index when using later.
-      }
-    } else {
-      eventTargetIdxs.push(playerList.indexOf(eventPlayers[event.effectedTargets[0]]));
-    }      
+    /* Pushing the playerList index/ices of the targeted player(s) so we don't have to do tedious index checks when updating later. */
+    for ( let i = 0; i < event.effectedTargets.length; i++ ) {
+      eventTargetIdxs.push(playerList.indexOf(eventPlayers[event.effectedTargets[i]])); // 
+    } 
 
     /* Update health for effected targets and remove dead players */
-    for ( let i = 0; i < eventTargetIdxs.length; i++ ) {        
-
+    for ( let i = 0; i < eventTargetIdxs.length; i++ ) {
       let currentTarget = playerList[eventTargetIdxs[i - playersDied]]; // If a player dies the array gets smaller and therefore we need to adjust our index positioning.
       if ( event.targets !== 'all' ) {
         currentTarget.health += event.healthChange[i]; // Targeted player changes health by corresponding healthChange in the event.
       } else {
-        currentTarget.health += event.healthChange[0] // When all players in the game lose the same amount of health.
+        currentTarget.health += event.healthChange[0] // When all players in the game lose the same amount of health which is the first healthChange value.
       }
 
       if ( currentTarget.health > 100 ) currentTarget.health = 100; // Health can't go beyond 100 which is max.        
 
       /* When a player dies move them from playerList -> deadPlayers and set how many players died this round to send R.I.P messages
-          Very important; This means that eventPlayers will still be remaning and can be read to type out data while playerList is removed. */
+          Very important; This means that eventPlayers will still be remaning and can be read to type out data while a player from playerList is removed. */
       if ( currentTarget.health <= 0 ) {
         currentTarget.health = 0;
         deadPlayers.push(...playerList.splice(playerList.indexOf(currentTarget), 1));
@@ -65,7 +62,8 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
     /* Creating the event by replacing targets with correct names */
     let replacedEvent = event.description.trim().split(/[ ,]+/).map(word => {
         if ( word === '<player>' ) {
-          activeTarget++; // To be able to check first player against effected and then second etc.
+          activeTarget++; // To be able to check first player[0] against effected (which can be player[2]) and then check second player[1] against effected and so on.
+
           /* If first player is an effected target type it out with underline */
           for ( let i = 0; i < event.effectedTargets.length; i++ ) {
             if ( eventPlayers[activeTarget] === eventPlayers[event.effectedTargets[i]] ) return `__**${eventPlayers[activeTarget].name}**__`;
@@ -78,7 +76,7 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
 
     let FeelsGoodMan = bot.emojis.find(emoji => emoji.name === 'FeelsGoodMan');
     let FeelsOkayMan = bot.emojis.find(emoji => emoji.name === 'FeelsOkayMan');
-    let monkaS = bot.emojis.find(emoji => emoji.name === 'MonkaS');
+    let monkaS = bot.emojis.find(emoji => emoji.name === 'monkaS');
 
     let roundMessage = `${replacedEvent.join(' ')}.`;
     let effectedTargetsMessages = [];
