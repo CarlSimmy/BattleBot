@@ -76,9 +76,9 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
         }
     });
 
-    let FeelsGoodMan = bot.emojis.find('name', 'FeelsGoodMan');
-    let FeelsOkayMan = bot.emojis.find('name', 'FeelsOkayMan');
-    let monkaS = bot.emojis.find('name', 'monkaS');
+    let FeelsGoodMan = bot.emojis.find(emoji => emoji.name === 'FeelsGoodMan');
+    let FeelsOkayMan = bot.emojis.find(emoji => emoji.name === 'FeelsOkayMan');
+    let monkaS = bot.emojis.find(emoji => emoji.name === 'MonkaS');
 
     let roundMessage = `${replacedEvent.join(' ')}.`;
     let effectedTargetsMessages = [];
