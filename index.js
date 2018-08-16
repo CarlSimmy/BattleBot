@@ -47,7 +47,7 @@ bot.on('ready', async() => {
   bot.user.setActivity('!commands');
 });
 
-/* Bot check when a message is types into the channel */
+/* Bot check when a message is typed into the channel */
 bot.on('message', async message => {
   if ( message.author.bot || message.channel.type === 'dm' ) return; // Can't run commands from other bots or direct messages.
   const pfx = config.prefix;
