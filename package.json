@@ -9,7 +9,7 @@
   "author": "Simon Jansson <sijansson@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.3.0",
-    "node-fetch": "^2.0.0"
+    "discord.js": "^11.4.2",
+    "node-fetch": "^2.2.0"
   }
 }
