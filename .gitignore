@@ -40,3 +40,5 @@ Thumbs.db
 ###########
 node_modules
 dist*
+events.json
+titles.json

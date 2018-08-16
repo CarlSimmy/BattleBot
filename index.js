@@ -60,31 +60,31 @@ bot.on('message', async message => {
   /* COMMAND: Show information and available commands */
   if ( command === 'commands' ) {
     if ( gameStatus.started ) return message.channel.send(`You can check the commands when the game has ended ${message.author}!`);
-    commands.run(Discord, bot, message);
+    commands(Discord, bot, message);
   }
 
   /* COMMAND: The message author joins the game */
   if ( command === 'join' ) {
     if ( gameStatus.started ) return message.channel.send(`You were too slow ${message.author}! The game has already started.`);
-    join.run(message, playerList, titles, randomFrom, addPlayer);
+    join(message, playerList, titles, randomFrom, addPlayer);
   }
 
   /* COMMAND: Adding a random player to the game (randomuser.me) */
   if ( command === 'addbot' ) {
     if ( gameStatus.started ) return message.channel.send(`Hold up ${message.author}, you can't add new bots when the game has already started!`);
-    addbot.run(message, playerList, titles, randomFrom, addPlayer);
+    addbot(message, playerList, titles, randomFrom, addPlayer);
   }
 
   /* COMMAND: List all players */
   if ( command === 'players' ) {
     if ( gameStatus.started ) return message.channel.send(`Don't list players when the game has already started ${message.author}!`);
-    players.run(Discord, message, playerList);
+    players(Discord, message, playerList);
   }
 
   /* COMMAND: Remove all listed alive and dead players */
   if ( command === 'reset' ) {
     if ( gameStatus.started ) return message.channel.send(`Why are you trying to reset the game while it's running ${message.author}?`);
-    reset.run(message, playerList, deadPlayers);
+    reset(message, playerList, deadPlayers);
   }
 
   /* COMMAND: Start the game loop */
@@ -92,7 +92,7 @@ bot.on('message', async message => {
     if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`);
     if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`);
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
-    start.run(Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom);
+    start(Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom);
   }
 
   /* COMMAND: Start a new game with the same players */
@@ -101,6 +101,6 @@ bot.on('message', async message => {
     if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`);
     message.channel.send('**Starting a new game with the same players!**');
     playerList = JSON.parse(JSON.stringify(prevPlayerList));
-    start.run(Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom);
+    start(Discord, bot, message, events, gameStatus, prevPlayerList, playerList, deadPlayers, randomFrom);
   }
 });
