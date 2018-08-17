@@ -60,12 +60,12 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
     }
 
     /* Creating the event by replacing targets with correct names */
-    let replacedEvent = event.description.trim().split(/[ ,]+/).map(word => {
+    let replacedEvent = event.description.trim().split(/[ ,.]+/).map(word => {
         if ( word === '<player>' ) {
           activeTarget++; // To be able to check first player[0] against effected (which can be player[2]) and then check second player[1] against effected and so on.
 
           /* If first player is an effected target type it out with underline */
-          for ( let i = 0; i < event.effectedTargets.length; i++ ) {
+          for ( let i = 0; i < event.effectedTargets.length; i++ ) {            
             if ( eventPlayers[activeTarget] === eventPlayers[event.effectedTargets[i]] ) return `__**${eventPlayers[activeTarget].name}**__`;
           }
           return `**${eventPlayers[activeTarget].name}**`; // If the first player is not a target
@@ -75,31 +75,37 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
     });
 
     /* Display different emojis based on players health */
-    let FeelsGoodMan = bot.emojis.find(emoji => emoji.name === 'FeelsGoodMan');
-    let FeelsOkayMan = bot.emojis.find(emoji => emoji.name === 'FeelsOkayMan');
-    let monkaS = bot.emojis.find(emoji => emoji.name === 'monkaS');
+    const health0 = bot.emojis.find(emoji => emoji.name === 'health0');
+    const health5 = bot.emojis.find(emoji => emoji.name === 'health5');
+    const health10 = bot.emojis.find(emoji => emoji.name === 'health10');
+    const health15 = bot.emojis.find(emoji => emoji.name === 'health15');
+    const health20 = bot.emojis.find(emoji => emoji.name === 'health20');
+    const health25 = bot.emojis.find(emoji => emoji.name === 'health25');
 
     let roundMessage = `${replacedEvent.join(' ')}.`;
     let effectedTargetsMessages = [];
 
-    for ( let i = 0; i < event.effectedTargets.length; i++ ) {           
-      let healthEmoji = FeelsOkayMan;
+    for ( let i = 0; i < event.effectedTargets.length; i++ ) {
       let targetHealth = eventPlayers[event.effectedTargets[i]].health;
       let targetName = eventPlayers[event.effectedTargets[i]].name;
 
-      if ( targetHealth <= 25 ) {
-        healthEmoji = monkaS;
-      } else if ( targetHealth >= 75 ) {
-        healthEmoji = FeelsGoodMan;
-      } else {
-        healthEmoji = FeelsOkayMan;
-      }
-    
+      /* Ticks for health to display a health bar based on 5's  */
+      let healthTicks = Math.round(targetHealth / 5) * 5;
+      if ( healthTicks === 0 && targetHealth > 0 ) healthTicks = 10;
+
+      /* Health bar made up of 4 emojis with 25hp each to diplay HP */
+      let healthBar = `${health25}${health25}${health25}${health25}`;
+      if ( healthTicks > 100 ) { healthBar = `${health25}${health25}${health25}${health25}${eval('health' + (healthTicks - 100))}`; }
+      if ( healthTicks >= 75 && healthTicks <= 100 ) { healthBar = `${health25}${health25}${health25}${eval('health' + (healthTicks - 75))}`; }
+      if ( healthTicks >= 50 && healthTicks < 75 ) { healthBar = `${health25}${health25}${eval('health' + (healthTicks - 50))}${health0}`; }
+      if ( healthTicks >= 25 && healthTicks < 50 ) { healthBar = `${health25}${eval('health' + (healthTicks - 25))}${health0}${health0}`; }
+      if ( healthTicks >= 0 && healthTicks < 25 ) { healthBar = `${eval('health' + healthTicks)}${health0}${health0}${health0}`; }
+
       /* Push a message for each effected target so we can loop through and output all of them later */
       if ( event.targets !== 'all' ) {
-        effectedTargetsMessages.push(`${targetName}  ${event.healthChange[i] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[i])}HP (${targetHealth})* ${healthEmoji}`);
+        effectedTargetsMessages.push(`${targetName}  ${event.healthChange[i] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[i])}HP*   ${healthBar}`);
       } else {
-        effectedTargetsMessages.push(`${targetName}  ${event.healthChange[0] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[0])}HP (${targetHealth})* ${healthEmoji}`);
+        effectedTargetsMessages.push(`${targetName}  ${event.healthChange[0] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[0])}HP*   ${healthBar}`);
       }
     }
     
