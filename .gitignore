@@ -42,3 +42,4 @@ node_modules
 dist*
 events.json
 titles.json
+config.json
