@@ -74,6 +74,7 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
         }
     });
 
+    /* Display different emojis based on players health */
     let FeelsGoodMan = bot.emojis.find(emoji => emoji.name === 'FeelsGoodMan');
     let FeelsOkayMan = bot.emojis.find(emoji => emoji.name === 'FeelsOkayMan');
     let monkaS = bot.emojis.find(emoji => emoji.name === 'monkaS');
