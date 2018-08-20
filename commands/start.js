@@ -1,3 +1,6 @@
+const getPlayersForEvent = require('./startFunctions/getPlayersForEvent');
+const updateHealthForPlayers = require('./startFunctions/updateHealthForPlayers');
+
 module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom ) => {
   gameStatus.started = true;
 
@@ -8,56 +11,18 @@ module.exports = ( Discord, bot, message, events, gameStatus, playerList, deadPl
     let activeTarget = -1; // Increasing counter to replace <player> with first active target, then second etc.
     let playersDied = 0; // To check if a player died this round to type it out.
 
-    /* Get random players for the event */
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; } // If there are more targets than active players, ignore and restart the game loop.
 
-    if ( event.targets !== 'all' ) {
-      for ( let i = 0; i < event.targets; i++ ) {
-        let player = randomFrom(playerList);
-  
-        while ( eventPlayers.indexOf(player) !== -1 ) {
-          player = randomFrom(playerList);
-        }
-  
-        eventPlayers.push(player);
-      }
-    } else {
-      /* Copy array as temporary players and effected so they won't mirror the real playerList which means they won't be removed the same round and can be read */
-      let tempPlayers = [];
-      let tempEffected = [];
-
-      playerList.forEach((player, idx) => {
-        tempPlayers.push(player);
-        tempEffected.push(idx);
-      })
-      eventPlayers = tempPlayers;
-      event.effectedTargets = tempEffected;
-    }
+    /* Getting random players for the current event */
+    let setEffectedTargets = (effected) => event.effectedTargets = effected;
+    getPlayersForEvent(event, eventPlayers, randomFrom, playerList, setEffectedTargets);
 
     /* Pushing the playerList index/ices of the targeted player(s) so we don't have to do tedious index checks when updating later. */
-    for ( let i = 0; i < event.effectedTargets.length; i++ ) {
-      eventTargetIdxs.push(playerList.indexOf(eventPlayers[event.effectedTargets[i]])); // 
-    } 
-
+    event.effectedTargets.forEach(target => eventTargetIdxs.push(playerList.indexOf(eventPlayers[target])));
+  
     /* Update health for effected targets and remove dead players */
-    for ( let i = 0; i < eventTargetIdxs.length; i++ ) {
-      let currentTarget = playerList[eventTargetIdxs[i - playersDied]]; // If a player dies the array gets smaller and therefore we need to adjust our index positioning.
-      if ( event.targets !== 'all' ) {
-        currentTarget.health += event.healthChange[i]; // Targeted player changes health by corresponding healthChange in the event.
-      } else {
-        currentTarget.health += event.healthChange[0] // When all players in the game lose the same amount of health which is the first healthChange value.
-      }
-
-      if ( currentTarget.health > 100 ) currentTarget.health = 100; // Health can't go beyond 100 which is max.        
-
-      /* When a player dies move them from playerList -> deadPlayers and set how many players died this round to send R.I.P messages
-          Very important; This means that eventPlayers will still be remaning and can be read to type out data while a player from playerList is removed. */
-      if ( currentTarget.health <= 0 ) {
-        currentTarget.health = 0;
-        deadPlayers.push(...playerList.splice(playerList.indexOf(currentTarget), 1));
-        playersDied++;
-      }
-    }
+    let increasePlayersDied = () => playersDied++; // Set playersDied when called from the child component.
+    updateHealthForPlayers(event, eventTargetIdxs, playerList, playersDied, deadPlayers, increasePlayersDied);
 
     /* Creating the event by replacing targets with correct names */
     let replacedEvent = event.description.trim().split(/[ ,.]+/).map(word => {
