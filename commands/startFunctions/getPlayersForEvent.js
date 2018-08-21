@@ -17,6 +17,6 @@ module.exports = ( event, eventPlayers, randomFrom, playerList, setEffectedTarge
       tempEffected.push(idx);
     })
 
-    setEffectedTargets(tempEffected); // Update effected targets in events.json since there are no effected targets by default because we can't predict the number of players before the game.
+    setEffectedTargets(tempEffected);
   }
 }
