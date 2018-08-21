@@ -1,4 +1,9 @@
-module.exports = ( event, eventTargetIdxs, playerList, playersDied, deadPlayers, increasePlayersDied ) => {
+module.exports = ( event, playerList, eventPlayers, playersDied, deadPlayers, increasePlayersDied ) => {
+  let eventTargetIdxs = [];
+
+  /* Pushing the playerList index/ices of the targeted player(s) to map correctly between eventPlayers and playerList */
+  event.effectedTargets.forEach(target => eventTargetIdxs.push(playerList.indexOf(eventPlayers[target])));
+  
   for ( let i = 0; i < eventTargetIdxs.length; i++ ) {
     let currentTarget = playerList[eventTargetIdxs[i - playersDied]]; // If a player dies the array gets smaller and therefore we need to adjust our index positioning.
 
