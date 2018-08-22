@@ -41,7 +41,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
 
     /* Update health for effected targets and remove dead players */
     if ( !event.itemType ) {
-      updateHealthForPlayers(event, playerList, eventPlayers, playersDied, deadPlayers, increasePlayersDied, breakArmor);
+      updateHealthForPlayers(event, playerList, eventPlayers, deadPlayers, increasePlayersDied, breakArmor);
     }    
 
     /* Creating the event by replacing targets with the correct targeted players names */

@@ -1,12 +1,12 @@
-module.exports = ( event, playerList, eventPlayers, playersDied, deadPlayers, increasePlayersDied, breakArmor ) => {
-  var internalPlayersDied = playersDied; // For tracking internally while looping since the updated data is not imported.
+module.exports = ( event, playerList, eventPlayers, deadPlayers, increasePlayersDied, breakArmor ) => {
+  let tempDeadPlayers = []; // For keeping track of dead players before removing them from the playerList.
   let eventTargetIdxs = [];
 
   /* Pushing the playerList index/ices of the targeted player(s) to map correctly between eventPlayers and playerList */
   event.effectedTargets.forEach(target => eventTargetIdxs.push(playerList.indexOf(eventPlayers[target])));
 
   for ( let i = 0; i < eventTargetIdxs.length; i++ ) {
-    let currentTarget = playerList[eventTargetIdxs[i - internalPlayersDied]]; // If a player dies the array gets smaller and therefore we need to adjust our index positioning.
+    let currentTarget = playerList[eventTargetIdxs[i]]; // If a player dies the array gets smaller and therefore we need to adjust our index positioning.
     let excessDamage = 0;
     if ( event.targets !== 'all' ) {
       // Looks pretty ugly with all If/else nesting, clean up?
@@ -41,9 +41,10 @@ module.exports = ( event, playerList, eventPlayers, playersDied, deadPlayers, in
         Very important; This means that eventPlayers will still be remaning and can be read to type out data while a player from playerList is removed. */
     if ( currentTarget.health <= 0 ) {
       currentTarget.health = 0;
-      deadPlayers.push(...playerList.splice(playerList.indexOf(currentTarget), 1));
-      internalPlayersDied++;
+      tempDeadPlayers.push(currentTarget);
       increasePlayersDied();
     }
   }
+
+  tempDeadPlayers.forEach(player => deadPlayers.push(...playerList.splice(playerList.indexOf(player), 1)));
 }
