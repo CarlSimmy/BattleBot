@@ -2,9 +2,10 @@
 const Discord   = require('discord.js');
 const config    = require('./config.json');
 
-/* JSON events & titles */
+/* JSON  lists */
 const events    = require('./events.json');
 const titles    = require('./titles.json');
+const armors    = require('./armors.json');
 
 /* On message commands */
 const commands  = require('./commands/commands.js');
@@ -32,7 +33,13 @@ function addPlayer(id, name, title, url) {
     health: 100,
     name,
     title,
-    url
+    url,
+    equipment: {
+      armor: {
+        name: '',
+        value: 0
+      }
+    }
   });
 };
 
@@ -92,7 +99,7 @@ bot.on('message', async message => {
     if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`);
     if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`);
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
-    start(Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom);
+    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom);
   }
 
   /* COMMAND: Start a new game with the same players */
@@ -101,6 +108,6 @@ bot.on('message', async message => {
     if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`);
     message.channel.send('**Starting a new game with the same players!**');
     playerList = JSON.parse(JSON.stringify(prevPlayerList));
-    start(Discord, bot, message, events, gameStatus, playerList, deadPlayers, randomFrom);
+    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom);
   }
 });

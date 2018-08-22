@@ -1,4 +1,4 @@
-module.exports = ( event, eventPlayers ) => {
+module.exports = ( event, eventPlayers, obtainedItem ) => {
   let activeTarget = -1; // Increasing counter to replace <player> with first active target, then second etc.
 
   let replacedEvent = event.description.trim().split(/[ ,.]+/).map(word => {
@@ -10,6 +10,8 @@ module.exports = ( event, eventPlayers ) => {
         if ( eventPlayers[activeTarget] === eventPlayers[event.effectedTargets[i]] ) return `__**${eventPlayers[activeTarget].name}**__`;
       }
       return `**${eventPlayers[activeTarget].name}**`; // If the first player is not a target
+    } else if ( word === '<item>' ) {
+      return `**${obtainedItem.name}**`;
     } else {
       return word;
     }
