@@ -5,34 +5,21 @@ module.exports = ( event, playerList, eventPlayers, deadPlayers, increasePlayers
   /* Pushing the playerList index/ices of the targeted player(s) to map correctly between eventPlayers and playerList */
   event.effectedTargets.forEach(target => eventTargetIdxs.push(playerList.indexOf(eventPlayers[target])));
 
+  function changePlayerHealth(currentTarget, eventChange) {
+    let healthChange = eventChange + currentTarget.equipment.armor.value;
+    if ( eventChange > 0 ) healthChange = eventChange;
+    currentTarget.health += (healthChange > 0 && eventChange < 0) ? 0 : healthChange; // If armor left & event deals damage, remove all damage. Otherwise deal damage or gain health.
+    currentTarget.equipment.armor.value += eventChange > 0 ? 0 : eventChange; // If you gain HP, don't add it to armor.
+    currentTarget.equipment.armor.value <= 0 && breakArmor(currentTarget); // Remove armor if it takes more damage than its value.
+  }
+
   for ( let i = 0; i < eventTargetIdxs.length; i++ ) {
-    let currentTarget = playerList[eventTargetIdxs[i]]; // If a player dies the array gets smaller and therefore we need to adjust our index positioning.
-    let excessDamage = 0;
+    let currentTarget = playerList[eventTargetIdxs[i]];
+    
     if ( event.targets !== 'all' ) {
-      // Looks pretty ugly with all If/else nesting, clean up?
-      if ( currentTarget.equipment.armor.value > 0 && event.healthChange[i] < 0 ) { // If target has armor and event deals damage to prevent adding armor from gaining HP.
-        excessDamage = event.healthChange[i] + currentTarget.equipment.armor.value;
-        currentTarget.equipment.armor.value += event.healthChange[i];
-        if ( currentTarget.equipment.armor.value < 0 ) currentTarget.equipment.armor.value = 0; // Armor can't go below 0
-
-        currentTarget.health += currentTarget.equipment.armor.value > 0 ? 0 : excessDamage; // Targeted player changes health by corresponding healthChange in the event, reduced by armor.
-      } else {
-        currentTarget.health += event.healthChange[i]; // Changing health normally if target has no armor or gains HP.
-      }
-
-      if ( currentTarget.equipment.armor.value <= 0 ) breakArmor(currentTarget); // Remove armor if it takes more damage than its value.
+      changePlayerHealth(currentTarget, event.healthChange[i]);
     } else {
-      if ( currentTarget.equipment.armor.value > 0 && event.healthChange[0] < 0 ) { // If target has armor and event deals damage to prevent adding armor from gaining HP.
-        excessDamage = event.healthChange[0] + currentTarget.equipment.armor.value;
-        currentTarget.equipment.armor.value += event.healthChange[0];
-        if ( currentTarget.equipment.armor.value < 0 ) currentTarget.equipment.armor.value = 0; // Armor can't go below 0
-
-        currentTarget.health += currentTarget.equipment.armor.value > 0 ? 0 : excessDamage; // Targeted player changes health by corresponding healthChange in the event, reduced by armor.
-      } else {
-        currentTarget.health += event.healthChange[0]; // Changing health normally if target has no armor or gains HP.
-      }
-
-      if ( currentTarget.equipment.armor.value <= 0 ) breakArmor(currentTarget); // Remove armor if it takes more damage than its value.
+      changePlayerHealth(currentTarget, event.healthChange[0]);
     }
 
     if ( currentTarget.health > 100 ) currentTarget.health = 100;        
