@@ -1,9 +1,5 @@
-module.exports = ( event, playerList, eventPlayers, deadPlayers, increasePlayersDied, breakArmor ) => {
+module.exports = ( event, playerList, deadPlayers, increasePlayersDied, breakArmor, eventTargetIdxs ) => {
   let tempDeadPlayers = []; // For keeping track of dead players before removing them from the playerList.
-  let eventTargetIdxs = [];
-
-  /* Pushing the playerList index/ices of the targeted player(s) to map correctly between eventPlayers and playerList */
-  event.effectedTargets.forEach(target => eventTargetIdxs.push(playerList.indexOf(eventPlayers[target])));
 
   const changePlayerHealth = (currentTarget, eventChange) => {
     let healthChange = eventChange + currentTarget.equipment.armor.value;
