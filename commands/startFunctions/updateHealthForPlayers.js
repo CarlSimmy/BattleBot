@@ -5,7 +5,7 @@ module.exports = ( event, playerList, eventPlayers, deadPlayers, increasePlayers
   /* Pushing the playerList index/ices of the targeted player(s) to map correctly between eventPlayers and playerList */
   event.effectedTargets.forEach(target => eventTargetIdxs.push(playerList.indexOf(eventPlayers[target])));
 
-  function changePlayerHealth(currentTarget, eventChange) {
+  const changePlayerHealth = (currentTarget, eventChange) => {
     let healthChange = eventChange + currentTarget.equipment.armor.value;
     if ( eventChange > 0 ) healthChange = eventChange;
     currentTarget.health += (healthChange > 0 && eventChange < 0) ? 0 : healthChange; // If armor left & event deals damage, remove all damage. Otherwise deal damage or gain health.

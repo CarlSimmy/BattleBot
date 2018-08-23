@@ -15,11 +15,11 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     let obtainedItem = {}; // To save item for print-out after obtained.
 
     /* Functions for settings variables from child components */
-    const setEffectedTargets = (effected) => event.effectedTargets = effected; // If event targets ALL, update effected targets in events.json since there are no effected targets by default.
+    const setEffectedTargets = effected => event.effectedTargets = effected; // If event targets ALL, update effected targets in events.json since there are no effected targets by default.
     const increasePlayersDied = () => playersDied++;
     const changeGameStatus = () => gameStatus.started = false;
     const clearPlayerLists = () => (playerList.length = 0, deadPlayers.length = 0);
-    const breakArmor = (targetPlayer) => targetPlayer.equipment.armor = { name: '', value: 0 };
+    const breakArmor = targetPlayer => targetPlayer.equipment.armor = { name: '', value: 0 };
 
     /* If there are more targets than active players for the event, ignore and restart the game loop to pick a new */
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
