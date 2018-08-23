@@ -26,7 +26,14 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
 
     /* Getting random players for the current event */
     getPlayersForEvent(event, eventPlayers, randomFrom, playerList, setEffectedTargets);
+
+    /* När man blir trollad till en zebra ser man ut som en zebra */
+    if ( event.description.includes("till en zebra") ) {
+      playerList[playerList.indexOf(eventPlayers[0])].url = 'https://tiergarten.nuernberg.de/fileadmin/bilder/Tierinformationen/Bilder/Wueste/Grevyzebra.jpg';
+    }
   
+
+
     /* Equipping item, should be in own function */
     if ( event.itemType ) {
       // Needs to be updated in loop with eventIdx code.
@@ -35,7 +42,6 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
       playerList[currPlayer].equipment.armor.name = obtainedItem.name;
       playerList[currPlayer].equipment.armor.value = obtainedItem.value;
     }
-
 
 
 
