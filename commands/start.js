@@ -34,16 +34,12 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
       playerList[eventTargetIdxs[0]].url = 'https://tiergarten.nuernberg.de/fileadmin/bilder/Tierinformationen/Bilder/Wueste/Grevyzebra.jpg';
     }
   
-
-
     /* Equipping item, should be in own function when bigger */
     if ( event.itemType ) {
       obtainedItem = randomFrom(armors);
       playerList[eventTargetIdxs[0]].equipment.armor.name = obtainedItem.name;
       playerList[eventTargetIdxs[0]].equipment.armor.value = obtainedItem.value;
     }
-
-
 
     /* Update health for effected targets and remove dead players */
     if ( !event.itemType ) {
