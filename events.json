@@ -2,7 +2,283 @@
   {
     "targets": 1,
     "effectedTargets": [0],
+    "healthChange": [-10],
+    "description": "Rooter52 börjar gråta när <player> kallar honom för Skrooter52 istället. Skuldkänslorna blir för mycket att hantera"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-666],
+    "description": "Jimmy Bölja trollar <player> till en zebra som genast glömmer bort all stridslystenhet och blir ett med naturen"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-99],
+    "description": "<player> är ute och letar proviant när han plötsligt snubblar på en gren och ramlar rakt ner i Hjo IT"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-84],
+    "description": "<player> tittar sig inte för ordentligt när han går och trampar olyckligt rakt på en legobit"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-25],
+    "description": "<player> halkar på ett bananskal och landar med analöppningen mitt på en drakdildo"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-10],
+    "description": "<player> tar fel dörr och märker att läderklubben egentligen ligger 2 kvarter bort"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-37],
+    "description": "En full Sebastian kommer springandes runt hörnet och klämmer sönder kuken ordentligt på <player>"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-10],
+    "description": "<player> får plötsligen väldigt ont i sin axel"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-5],
+    "description": "<player> hittar till sin glädje en Pepsi Max i skogen. Glädjen byts dock snabbt ut när han märker att den innehöll Dr. Pepper istället"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-69],
+    "description": "<player> sätts i Van Darkholmes läger för underanvända barn och får smaka rejält med bestraffningar"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-33],
+    "description": "<player> tvingas lyssna på Claes utläggning om reglerna på Twitch och varför tjejer inte blir bannade även fast dom är nakna"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-55],
+    "description": "<player> blir biten av den ovanliga 'Erectus Explodus'-myggan vilken gör hans penis så erekt att den är på gränsen att brista"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-34],
+    "description": "<player> tänker vara snäll och skjutsa Claes till donken men blir oturligt nog stoppad av aina som har span på den obesiktade bilen"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-20],
+    "description": "<player> dansar runt i en ring till Sonic för länge och blir helt snurrig"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-30],
+    "description": "<player> råkar klippa sig själv i örat med en rostig sax"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-25],
+    "description": "<player> fastnar i ett spindelnät och tvingas till att slava för spindeln"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-1],
+    "description": "<player> tar sig en slurk sur mjölk"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-5],
+    "description": "<player> äter 30 chicken nuggets och får magknip"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-21],
+    "description": "Det kommer en jude från ingenstans som stjäl alla pengar från <player>"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-20],
+    "description": "<player> blir ledsen över sin minidick och boxar sig själv i magen"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-29],
+    "description": "<player> hittar en mystisk spegel mitt inne i skogen som reflekterar ens innersta drömmar men blir extremt besviken då den inte verkar fungera idag"
+  },
+
+  {
+    "targets": 1,
+    "effectedTargets": [0],
     "healthChange": [15],
-    "description": "<player> decides to set up a camp and make himself some delicious calzone"
+    "description": "<player> bestämmer sig för att ta det lugnt och förtära en smaskig calzone"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [69],
+    "description": "<player> hittar en mystisk spegel mitt inne i skogen som reflekterar ens innersta drömmar och ser sig själv tappa tvålen framför Billy"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [10],
+    "description": "<player> tar sig en ordentlig slick på Älgs lyckoflint"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [15],
+    "description": "<player> råkar skicka en nakenbild till sin farfar men blir istället överlycklig när farfar direkt skickar en tillbaks"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [71],
+    "description": "Mitt på vägen hittar <player> en nästan oanvänd 'Penispumper 9000' och smyger sig genast bort till närmsta buskage för att pröva den"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [17],
+    "description": "Boy kommer och bjuder <player> på lite vatten från sin heliga brunn"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [99],
+    "description": "<player> gör en heroisk flykt från Hjo IT"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [5],
+    "description": "<player> slickar i sig en stor stark"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [8],
+    "description": "<player> tar sig en slurk färsk mjölk direkt från spenen på en vild get"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [27],
+    "description": "<player> avinstallerar LoL och känner direkt en inre frid"
+  },
+
+  {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [10, -15],
+    "description": "<player> behöver lugna nerverna och våldför sig på första bästa person. Oturligt nog dök <player> upp vid fel tidpunkt"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [15, 15],
+    "description": "<player> och <player> har tröttnat på allt våld och bestämmer sig istället för att laga tacos tillsammans"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [15, -15],
+    "description": "<player> smyger upp på <player> och stjäl all hans bärs"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [-17, -17],
+    "description": "<player> och <player> börjar av någon outgrundlig anledning att kolla på NilsLegends stream. Det dröjer inte länge förrän båda känner sig djupt deprimerade"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [18, 18],
+    "description": "<player> och <player> börjar tillsammans att dansa i glädje till 'Donkey Kong Countrys' ljudspår"
+  },
+  {
+    "targets": 4,
+    "effectedTargets": [0, 1, 2],
+    "healthChange": [-10, -10, -10],
+    "description": "<player>, <player> och <player> trodde alla att dom kände <player> väl. Men alla kände sig förrådda när dom fick reda på att han använde sig av 'Dubbeldusch'"
+  },
+  {
+    "targets": 3,
+    "effectedTargets": [0, 1, 2],
+    "healthChange": [-20, 15, -10],
+    "description": "<player>, <player> och <player> sätter sig ner och lyssnar på Claes sagostund med varierat intresse"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [-47, 15],
+    "description": "<player> åker i fängelse och blir ordentligt assraped av <player> som etablerar sin dominans"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [1],
+    "healthChange": [15],
+    "description": "<player> kissar <player> i munnen som oväntat nog tycker att det är riktigt smaskens"
+  },
+  {
+    "targets": 2,
+    "effectedTargets": [1],
+    "healthChange": [-15],
+    "description": "<player> kommer fram och böjer hela <player> pizza"
+  },
+
+  {
+    "targets": "all",
+    "effectedTargets": [],
+    "healthChange": [-15],
+    "description": "Flugkungen Julius släpper lös sin armé som attackerar __**alla**__ på slagfältet"
+  },
+  {
+    "targets": "all",
+    "effectedTargets": [],
+    "healthChange": [20],
+    "description": "Simmy kommer med sin foodtruck och bjuder __**alla**__ på Napolitansk pizza av högsta kvalité"
+  },
+  {
+    "targets": "all",
+    "effectedTargets": [],
+    "healthChange": [-30],
+    "description": "Boy Air skickar ut sin flygplansflotta som släpper bomber över __**alla**__ på slagfältet"
+  },
+
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [],
+    "description": "Medan <player> gömmer sig i en buske stöter han på en nedgrävd kista. Med skakiga händer öppnar han kistan. + <item>",
+    "itemType": "armor"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [],
+    "description": "<player> bestämmer sig för att gå runt och slumpmässigt lyfta på stenar. Detta visar sig vara ett mycket smart drag + <item>",
+    "itemType": "armor"
   }
 ]
