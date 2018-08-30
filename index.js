@@ -17,7 +17,7 @@ const start     = require('./commands/start.js');
 
 /* Creating and authorizing bot */
 const bot = new Discord.Client({disableEveryone: true});
-bot.login(environment.token);
+bot.login(config.token);
 
 /* __Global variables to track the state of the game__ */
 var prevPlayerList = []; // Used for rematch functionality.
@@ -68,7 +68,7 @@ bot.on('ready', async() => {
 /* Bot check when a message is typed into the channel */
 bot.on('message', async message => {
   if ( message.author.bot || message.channel.type === 'dm' ) return; // Can't run commands from other bots or direct messages.
-  const pfx = environment.prefix;
+  const pfx = config.prefix;
   const args = message.content.slice(pfx.length).trim().split(/ +/g);
   let command = '';
   if ( message.content[0] === pfx ) {
