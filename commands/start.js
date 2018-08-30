@@ -8,7 +8,7 @@ const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
 module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch ) => {
   gameStatus.started = true;
 
-  function startGameRound() {
+  const startGameRound = async () => {
     /* Variables */
     let event = randomFrom(events); // A random event for this round.
     let eventPlayers = []; // All players for the current event.
@@ -34,48 +34,45 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
 
     /* Getting random players for the current event */
-    getPlayersForEvent(event, eventPlayers, randomFrom, playerList, setEffectedTargets, eventTargetIdxs);
+    await getPlayersForEvent(event, eventPlayers, randomFrom, playerList, setEffectedTargets, eventTargetIdxs);
 
     /* När man blir trollad till en zebra ser man ut som en zebra */
     if ( event.description.includes("till en zebra") ) {
       playerList[eventTargetIdxs[0]].url = 'https://tiergarten.nuernberg.de/fileadmin/bilder/Tierinformationen/Bilder/Wueste/Grevyzebra.jpg';
+      playerList[eventTargetIdxs[0]].title = 'Ett med naturen';
     }
   
     /* Equipping item, should be in own function when bigger */
     if ( event.itemType ) {
-      obtainedItem = randomFrom(armors);
+      obtainedItem = await randomFrom(armors);
       playerList[eventTargetIdxs[0]].equipment.armor.name = obtainedItem.name;
       playerList[eventTargetIdxs[0]].equipment.armor.value = obtainedItem.value;
     }
 
     /* Update health for effected targets and remove dead players */
     if ( !event.itemType ) {
-      updateHealthForPlayers(event, playerList, deadPlayers, increasePlayersDied, breakArmor, eventTargetIdxs);
+      await updateHealthForPlayers(event, playerList, deadPlayers, increasePlayersDied, breakArmor, eventTargetIdxs);
     }    
 
     /* Creating the event by replacing targets with the correct targeted players names */
-    let roundMessage = replaceEventTargets(event, eventPlayers, obtainedItem);
+    let roundMessage = await replaceEventTargets(event, eventPlayers, obtainedItem);
 
     /* Generate messages for HP loss/gain and show life bars */
     let effectedTargetsMessages = [];
-    generateTargetMessages(bot, event, eventPlayers, effectedTargetsMessages);
+    await generateTargetMessages(bot, event, eventPlayers, effectedTargetsMessages);
+ 
+    await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList, roundWinner,  winsNeeded, startRematch);
 
-    const checkIfRematch = async () => {
-      await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList, roundWinner,  winsNeeded, startRematch);
-
-      if ( gameStatus.started === false ) {
-        if ( roundWinner.wins < winsNeeded ) {
-          return startRematch(message, winsNeeded);
-        } else {
-          return message.channel.send(`Bow down to our new champion **${roundWinner.name}**!`);
-        }
+    if ( gameStatus.started === false ) {
+      if ( roundWinner.wins < winsNeeded ) {
+        return startRematch(message, winsNeeded);
+      } else {
+        return message.channel.send(`Bow down to our new champion **${roundWinner.name}**!`);
       }
-
-      message.channel.send('_ _'); // Outputs an empty line in Discord for some reason which makes messages easier to read.
-      return setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
     }
 
-    checkIfRematch(); // If game ended, check if rematch or end.
+    message.channel.send('_ _'); // Outputs an empty line in Discord for some reason which makes messages easier to read.
+    return setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
   }
 
   startGameRound(); // Initial start of the game round.

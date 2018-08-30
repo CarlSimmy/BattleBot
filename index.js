@@ -25,6 +25,7 @@ var playerList = [];
 var deadPlayers = [];
 var gameStatus = { started: false };
 var winsNeeded = -1;
+var currentRound = 0;
 
 /* __Functions__ */
 /* Add a player to the game */
@@ -52,8 +53,9 @@ const randomFrom = arr => {
 
 /* Rematch functionality */
 const startRematch = (message, winsNeeded) => {
+  currentRound += 1;
   message.channel.send('_ _');
-  message.channel.send('**Starting a new game with the same players!**');
+  message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
   message.channel.send('_ _');
   playerList = JSON.parse(JSON.stringify(prevPlayerList));
   start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch);
@@ -107,10 +109,13 @@ bot.on('message', async message => {
 
   /* COMMAND: Start the game loop */
   if ( command === 'start' ) {
+    currentRound = 1; // Always starting at round 1.
     winsNeeded = args[0]; // For example !start 4 would make "4" the number of wins needed to win.
     if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`);
     if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`);
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
+    message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
+    message.channel.send('_ _');
     start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch);
   }
 
@@ -119,6 +124,7 @@ bot.on('message', async message => {
     if ( gameStatus.started ) return message.channel.send(`You'll have plenty of time for a rematch when the current game has ended ${message.author}!`);
     if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`);
     prevPlayerList.forEach(player => player.wins = 0); // Reset wins
+    currentRound = 0; // Reset rounds to 0 since it adds +1 in rematch function.
     startRematch(message, winsNeeded);
   }
 });
