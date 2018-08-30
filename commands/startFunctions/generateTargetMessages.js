@@ -22,7 +22,7 @@ module.exports = ( bot, event, eventPlayers, effectedTargetsMessages ) => {
     if ( healthTicks === 0 && targetHealth > 0 ) healthTicks = 5;
 
     let armorTicks = Math.round(targetArmor / 5) * 5;
-    if ( armorTicks === 0 && targetArmor > 0 ) armorTicks = 5;
+    if ( armorTicks <= 0 && targetArmor > 0 ) armorTicks = 5;
 
     /* Health bar made up of 4 emojis with 25hp each to diplay HP */
     let healthBar = `${health25}${health25}${health25}${health25}`;

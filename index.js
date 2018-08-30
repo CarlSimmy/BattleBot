@@ -24,6 +24,7 @@ var prevPlayerList = []; // Used for rematch functionality.
 var playerList = [];
 var deadPlayers = [];
 var gameStatus = { started: false };
+var winsNeeded = -1;
 
 /* __Functions__ */
 /* Add a player to the game */
@@ -39,14 +40,24 @@ function addPlayer(id, name, title, url) {
         name: '',
         value: 0
       }
-    }
+    },
+    wins: 0
   });
 };
 
 /* Get random value from an array */
-function randomFrom(arr) {
+const randomFrom = arr => {
   return arr[Math.floor(Math.random() * arr.length)];
-};
+}
+
+/* Rematch functionality */
+const startRematch = (message, winsNeeded) => {
+  message.channel.send('_ _');
+  message.channel.send('**Starting a new game with the same players!**');
+  message.channel.send('_ _');
+  playerList = JSON.parse(JSON.stringify(prevPlayerList));
+  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch);
+}
 
 /* Bot start */
 bot.on('ready', async() => {
@@ -96,18 +107,18 @@ bot.on('message', async message => {
 
   /* COMMAND: Start the game loop */
   if ( command === 'start' ) {
+    winsNeeded = args[0]; // For example !start 4 would make "4" the number of wins needed to win.
     if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`);
     if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`);
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
-    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom);
+    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch);
   }
 
   /* COMMAND: Start a new game with the same players */
   if ( command === 'rematch' ) {
     if ( gameStatus.started ) return message.channel.send(`You'll have plenty of time for a rematch when the current game has ended ${message.author}!`);
     if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`);
-    message.channel.send('**Starting a new game with the same players!**');
-    playerList = JSON.parse(JSON.stringify(prevPlayerList));
-    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom);
+    prevPlayerList.forEach(player => player.wins = 0); // Reset wins
+    startRematch(message, winsNeeded);
   }
 });

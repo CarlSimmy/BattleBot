@@ -5,7 +5,7 @@ const generateTargetMessages = require('./startFunctions/generateTargetMessages'
 const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
 //const equipItems             = require('./startFunctions/equipItems');
 
-module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom ) => {
+module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch ) => {
   gameStatus.started = true;
 
   function startGameRound() {
@@ -15,13 +15,20 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     let eventTargetIdxs = [];
     let playersDied = 0; // To check if a player died this round to type it out.
     let obtainedItem = {}; // To save item for print-out after obtained.
+    let roundWinner = { wins: -1 }; // Winner of the current game round.
 
     /* Functions for settings variables from child components */
     const setEffectedTargets = effected => event.effectedTargets = effected; // If event targets ALL, update effected targets in events.json since there are no effected targets by default.
     const increasePlayersDied = () => playersDied++;
-    const changeGameStatus = () => gameStatus.started = false;
+    const changeGameStatus = winningPlayer => {
+      roundWinner = winningPlayer;
+      gameStatus.started = false;
+      return clearPlayerLists();
+    }
     const clearPlayerLists = () => (playerList.length = 0, deadPlayers.length = 0);
     const breakArmor = targetPlayer => targetPlayer.equipment.armor = { name: '', value: 0 };
+    const updatePlayerList = winningPlayer => winningPlayer.wins += 1;
+    const updatePrevPlayerList = winningPlayerId => prevPlayerList.find(player => player.id === winningPlayerId).wins += 1; // Add win to prevPlayerList before rematch
 
     /* If there are more targets than active players for the event, ignore and restart the game loop to pick a new */
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
@@ -53,14 +60,22 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     let effectedTargetsMessages = [];
     generateTargetMessages(bot, event, eventPlayers, effectedTargetsMessages);
 
-    /* Output event and effected player messages + death/win-messages */
-    outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, clearPlayerLists);
+    const checkIfRematch = async () => {
+      await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList, roundWinner,  winsNeeded, startRematch);
 
-    /* If game has ended, break */
-    if ( gameStatus.started === false ) return false;
+      if ( gameStatus.started === false ) {
+        if ( roundWinner.wins < winsNeeded ) {
+          return startRematch(message, winsNeeded);
+        } else {
+          return message.channel.send(`Bow down to our new champion **${roundWinner.name}**!`);
+        }
+      }
 
-    setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
-    return message.channel.send('_ _'); // Outputs an empty line in Discord for some reason which makes messages easier to read.
+      message.channel.send('_ _'); // Outputs an empty line in Discord for some reason which makes messages easier to read.
+      return setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
+    }
+
+    checkIfRematch(); // If game ended, check if rematch or end.
   }
 
   startGameRound(); // Initial start of the game round.
