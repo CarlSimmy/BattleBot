@@ -15,7 +15,7 @@
     "targets": 1,
     "effectedTargets": [0],
     "healthChange": [-99],
-    "description": "<player> är ute och letar proviant när han plötsligt snubblar på en gren och ramlar rakt ner i Hjo IT"
+    "description": "<player> är ute och letar proviant när han plötsligt snubblar på en gren och ramlar rakt ner till Hjo IT"
   },
   {
     "targets": 1,
@@ -123,7 +123,25 @@
     "targets": 1,
     "effectedTargets": [0],
     "healthChange": [-29],
-    "description": "<player> hittar en mystisk spegel mitt inne i skogen som reflekterar ens innersta drömmar men blir extremt besviken då den inte verkar fungera idag"
+    "description": "<player> hittar en mystisk spegel mitt inne i skogen som reflekterar ens innersta drömmar men blir extremt besviken då den inte verkar fungera idag :disappointed:"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-25],
+    "description": "Seb ringer <player> på Discord som blir väldigt distraherad"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-50],
+    "description": "<player> äter en magisk frukt och får tuttifruttarmar, livet blev plötsligt mycket svårare"
+  },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [-15],
+    "description": "Mitt på vägen hittar <player> en nästan oanvänd 'Penispumper 9000' men pumpar så pass hårt att han istället får skavsår över hela dicken"
   },
 
   {
@@ -186,6 +204,12 @@
     "healthChange": [27],
     "description": "<player> avinstallerar LoL och känner direkt en inre frid"
   },
+  {
+    "targets": 1,
+    "effectedTargets": [0],
+    "healthChange": [5],
+    "description": "<player> äter 8 chicken nuggets och känner sig mätt"
+  },
 
   {
     "targets": 2,
@@ -218,6 +242,12 @@
     "description": "<player> och <player> börjar tillsammans att dansa i glädje till 'Donkey Kong Countrys' ljudspår"
   },
   {
+    "targets": 2,
+    "effectedTargets": [0, 1],
+    "healthChange": [17, 17],
+    "description": "<player> och <player> hittar en penispumper med dubbla öppningar och springer genast in i skogen för att pumpa loss tillsammans"
+  },
+  {
     "targets": 4,
     "effectedTargets": [0, 1, 2],
     "healthChange": [-10, -10, -10],
@@ -247,6 +277,12 @@
     "healthChange": [-15],
     "description": "<player> kommer fram och böjer hela <player> pizza"
   },
+  {
+    "targets": 3,
+    "effectedTargets": [2],
+    "healthChange": [-23],
+    "description": "<player> och <player> går ihop och gangar up på <player>"
+  },
 
   {
     "targets": "all",
@@ -265,6 +301,12 @@
     "effectedTargets": [],
     "healthChange": [-30],
     "description": "Boy Air skickar ut sin flygplansflotta som släpper bomber över __**alla**__ på slagfältet"
+  },
+  {
+    "targets": "all",
+    "effectedTargets": [],
+    "healthChange": [-18],
+    "description": "Plogen kommer och delar ut sin domedagspropaganda till __**alla**__ på slagfältet"
   },
 
   {
