@@ -20,7 +20,7 @@ module.exports = ( message, playerList, titles, randomFrom, addPlayer ) => {
     })
     .then(() => {
       addPlayer(id, name, title, avatar);
-      return message.channel.send(`Bot ${name} has entered the game!`);
+      return message.channel.send(`Bot ${name} has entered the game!`).then(msg => msg.delete(7000));
     })
     .catch(error => {
       console.log(`Unable to fetch user ${error}`);

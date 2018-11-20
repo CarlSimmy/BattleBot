@@ -12,6 +12,6 @@ module.exports = ( Discord, message, playerList ) => {
       );
     })
   } else {
-    return message.channel.send('No players have entered the game.');
+    return message.channel.send('No players have entered the game.').then(msg => msg.delete(7000));
   }
 }
