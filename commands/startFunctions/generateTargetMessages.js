@@ -6,6 +6,7 @@ module.exports = ( bot, event, eventPlayers, effectedTargetsMessages ) => {
   const health20 = bot.emojis.find(emoji => emoji.name === 'health20');
   const health25 = bot.emojis.find(emoji => emoji.name === 'health25');
 
+  const armor0 = ''; // Don't need to show anything for armor0, just define it.
   const armor5 = bot.emojis.find(emoji => emoji.name === 'armor5');
   const armor10 = bot.emojis.find(emoji => emoji.name === 'armor10');
   const armor15 = bot.emojis.find(emoji => emoji.name === 'armor15');
@@ -24,7 +25,7 @@ module.exports = ( bot, event, eventPlayers, effectedTargetsMessages ) => {
     let armorTicks = Math.round(targetArmor / 5) * 5;
     if ( armorTicks <= 0 && targetArmor > 0 ) armorTicks = 5;
 
-    /* Health bar made up of 4 emojis with 25hp each to diplay HP */
+    /* Health bar made up of 4 emojis consisting of 25hp each to display the HP correctly */
     let healthBar = `${health25}${health25}${health25}${health25}`;
     if ( healthTicks > 100 ) { healthBar = `${health25}${health25}${health25}${health25}${eval('health' + (healthTicks - 100))}`; }
     if ( healthTicks >= 75 && healthTicks <= 100 ) { healthBar = `${health25}${health25}${health25}${eval('health' + (healthTicks - 75))}`; }
@@ -36,7 +37,7 @@ module.exports = ( bot, event, eventPlayers, effectedTargetsMessages ) => {
     if ( targetArmor > 0 ) {
       let armorPart = `${armor25}`;
       let numArmorBars = Math.ceil(targetArmor / 25);
-      armorBar = armorPart.repeat(numArmorBars - 1) + `${eval('armor' + (armorTicks - ((numArmorBars - 1) * 25)))}`;
+      armorBar = armorPart.repeat(numArmorBars - 1) + `${eval('armor' + (armorTicks - ((numArmorBars - 1) * 25)))}`; // Number of complete armor bars + partial, e.g. ${armor25}${armor25}${armor5}.
     }
 
     /* Push a message for each effected target so we can loop through and output all of them later */
