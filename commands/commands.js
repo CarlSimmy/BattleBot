@@ -13,5 +13,5 @@ module.exports = ( Discord, bot, message ) => {
     .setThumbnail(bot.user.avatarURL)
     .setFooter('~ Made by Simmy');
 
-  return message.channel.send(infoEmbed);
+  return message.channel.send(infoEmbed).then(msg => msg.delete(20000));
 }

@@ -79,31 +79,31 @@ bot.on('message', async message => {
 
   /* COMMAND: Show information and available commands */
   if ( command === 'commands' ) {
-    if ( gameStatus.started ) return message.channel.send(`You can check the commands when the game has ended ${message.author}!`);
+    if ( gameStatus.started ) return message.channel.send(`You can check the commands when the game has ended ${message.author}!`).then(msg => msg.delete(5000));
     commands(Discord, bot, message);
   }
 
   /* COMMAND: The message author joins the game */
   if ( command === 'join' ) {
-    if ( gameStatus.started ) return message.channel.send(`You were too slow ${message.author}! The game has already started.`);
+    if ( gameStatus.started ) return message.channel.send(`You were too slow ${message.author}! The game has already started.`).then(msg => msg.delete(5000));
     join(message, playerList, titles, randomFrom, addPlayer);
   }
 
   /* COMMAND: Adding a random player to the game (randomuser.me) */
   if ( command === 'addbot' ) {
-    if ( gameStatus.started ) return message.channel.send(`Hold up ${message.author}, you can't add new bots when the game has already started!`);
+    if ( gameStatus.started ) return message.channel.send(`Hold up ${message.author}, you can't add new bots when the game has already started!`).then(msg => msg.delete(5000));
     addbot(message, playerList, titles, randomFrom, addPlayer);
   }
 
   /* COMMAND: List all players */
   if ( command === 'players' ) {
-    if ( gameStatus.started ) return message.channel.send(`Don't list players when the game has already started ${message.author}!`);
+    if ( gameStatus.started ) return message.channel.send(`Don't list players when the game has already started ${message.author}!`).then(msg => msg.delete(5000));
     players(Discord, message, playerList);
   }
 
   /* COMMAND: Remove all listed alive and dead players */
   if ( command === 'reset' ) {
-    if ( gameStatus.started ) return message.channel.send(`Why are you trying to reset the game while it's running ${message.author}?`);
+    if ( gameStatus.started ) return message.channel.send(`Why are you trying to reset the game while it's running ${message.author}?`).then(msg => msg.delete(5000));
     reset(message, playerList, deadPlayers);
   }
 
@@ -111,8 +111,8 @@ bot.on('message', async message => {
   if ( command === 'start' ) {
     currentRound = 1; // Always starting at round 1.
     winsNeeded = args[0]; // For example !start 4 would make "4" the number of wins needed to win.
-    if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`);
-    if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`);
+    if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`).then(msg => msg.delete(5000));
+    if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`).then(msg => msg.delete(7000));
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
     message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
     message.channel.send('_ _');
@@ -121,8 +121,8 @@ bot.on('message', async message => {
 
   /* COMMAND: Start a new game with the same players */
   if ( command === 'rematch' ) {
-    if ( gameStatus.started ) return message.channel.send(`You'll have plenty of time for a rematch when the current game has ended ${message.author}!`);
-    if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`);
+    if ( gameStatus.started ) return message.channel.send(`You'll have plenty of time for a rematch when the current game has ended ${message.author}!`).then(msg => msg.delete(5000));
+    if ( prevPlayerList.length < 2 ) return message.channel.send(`${message.author}, start a normal game first with !start before you call for a rematch.`).then(msg => msg.delete(5000));
     prevPlayerList.forEach(player => player.wins = 0); // Reset wins
     currentRound = 0; // Reset rounds to 0 since it adds +1 in rematch function.
     startRematch(message, winsNeeded);
