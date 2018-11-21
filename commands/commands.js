@@ -8,8 +8,9 @@ module.exports = ( Discord, bot, message ) => {
   **!addbot** - Add a random player to the game \n
   **!players** - Lists all active players for the round \n
   **!reset** - Removes all of the players from the current round \n
-  **!start** - Starts a new game round with the active players \n
-  **!rematch** - Starts a new game round with the players from the previous round`)
+  **!start [number]** - Starts a new game of first to [number] of wins. Default is one win \n
+  **!rematch** - Starts a new game round with the players from the previous round \n
+  **!profile** - Outputs your personal player profile, currently showing statistics`)
     .setThumbnail(bot.user.avatarURL)
     .setFooter('~ Made by Simmy');
 

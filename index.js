@@ -6,9 +6,11 @@ const config    = require('./config.json');
 const events    = require('./events.json');
 const titles    = require('./titles.json');
 const armors    = require('./armors.json');
+const stats     = require('./stats.json');
 
 /* On message commands */
 const commands  = require('./commands/commands.js');
+const profile   = require('./commands/profile.js');
 const join      = require('./commands/join.js');
 const addbot    = require('./commands/addbot.js');
 const players   = require('./commands/players.js');
@@ -58,7 +60,7 @@ const startRematch = (message, winsNeeded) => {
   message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
   message.channel.send('_ _');
   playerList = JSON.parse(JSON.stringify(prevPlayerList));
-  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch);
+  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats);
 }
 
 /* Bot start */
@@ -81,6 +83,12 @@ bot.on('message', async message => {
   if ( command === 'commands' ) {
     if ( gameStatus.started ) return message.channel.send(`You can check the commands when the game has ended ${message.author}!`).then(msg => msg.delete(5000));
     commands(Discord, bot, message);
+  }
+
+  /* COMMAND: Show personal profile for statistics */
+  if ( command === 'profile' ) {
+    if ( gameStatus.started ) return message.channel.send(`Please wait with checking your profile until the current game has ended ${message.author}!`).then(msg => msg.delete(5000));
+    profile(Discord, message, stats);
   }
 
   /* COMMAND: The message author joins the game */
@@ -116,7 +124,7 @@ bot.on('message', async message => {
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
     message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
     message.channel.send('_ _');
-    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch);
+    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats);
   }
 
   /* COMMAND: Start a new game with the same players */
