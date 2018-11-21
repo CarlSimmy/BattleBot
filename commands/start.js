@@ -1,3 +1,5 @@
+const fs                     = require('fs');
+
 const getPlayersForEvent     = require('./startFunctions/getPlayersForEvent');
 const updateHealthForPlayers = require('./startFunctions/updateHealthForPlayers');
 const replaceEventTargets    = require('./startFunctions/replaceEventTargets');
@@ -5,7 +7,7 @@ const generateTargetMessages = require('./startFunctions/generateTargetMessages'
 const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
 //const equipItems             = require('./startFunctions/equipItems');
 
-module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch ) => {
+module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats ) => {
   gameStatus.started = true;
 
   const startGameRound = async () => {
@@ -23,6 +25,20 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     const changeGameStatus = winningPlayer => {
       roundWinner = winningPlayer;
       gameStatus.started = false;
+
+      /* Save player win to stats file */
+      if ( winningPlayer.id > 100 ) {
+        if ( !stats[winningPlayer.id] ) { stats[winningPlayer.id] = { wins: 0 }; } // If player is not in file, add them first.
+        stats[winningPlayer.id].wins += 1;
+      } else { // Adding all bot players as id "0". >100 check is probably good enough for now since people won't add more than 100 bots?
+        if ( !stats[0] ) { stats[0] = { wins: 0 }; }
+        stats[0].wins += 1;
+      }
+
+      fs.writeFile('./stats.json', JSON.stringify(stats), err => { // File path is based from root "./stats.json"
+        err && console.log(err);
+      });
+
       return clearPlayerLists();
     }
     const clearPlayerLists = () => (playerList.length = 0, deadPlayers.length = 0);
@@ -61,7 +77,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     let effectedTargetsMessages = [];
     await generateTargetMessages(bot, event, eventPlayers, effectedTargetsMessages);
  
-    await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList, roundWinner,  winsNeeded, startRematch);
+    await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList);
 
     if ( gameStatus.started === false ) {
       if ( roundWinner.wins < winsNeeded ) {
