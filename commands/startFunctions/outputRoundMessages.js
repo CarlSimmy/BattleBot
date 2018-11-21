@@ -14,7 +14,7 @@ module.exports = ( roundMessage, effectedTargetsMessages, message, Discord, play
           .setAuthor(deadPlayers.slice(-playersDied)[i].name)
           .setThumbnail(deadPlayers.slice(-playersDied)[i].url)
           .setTitle(deadPlayers.slice(-playersDied)[i].title)
-          .setDescription('R.I.P' + '\n' + 'Wins: ' + deadPlayers.slice(-playersDied)[i].wins)
+          .setDescription('R.I.P' + '\n' + 'Round wins: ' + deadPlayers.slice(-playersDied)[i].wins)
       );
     }
   }
@@ -38,7 +38,7 @@ module.exports = ( roundMessage, effectedTargetsMessages, message, Discord, play
                         .setAuthor(playerList[0].name)
                         .setThumbnail(playerList[0].url)
                         .setTitle(playerList[0].title)
-                        .setDescription(playerList[0].health + ' HP' + '\n' + 'Wins: ' + playerList[0].wins)
+                        .setDescription(playerList[0].health + ' HP' + '\n' + 'Round wins: ' + playerList[0].wins)
                         .setFooter('WINNER');
 
     changeGameStatus(playerList[0]);
