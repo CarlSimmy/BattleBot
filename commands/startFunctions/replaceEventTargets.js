@@ -1,7 +1,7 @@
 module.exports = ( event, eventPlayers, obtainedItem ) => {
   let activeTarget = -1; // Increasing counter to replace <player> with first active target, then second etc.
 
-  let replacedEvent = event.description.trim().split(/[ ,.]+/).map(word => {
+  let replacedEvent = event.description.trim().split(/[ ]+/).map(word => {
     if ( word === '<player>' ) {
       activeTarget++; // To be able to check first player[0] against effected (which can be player[2]) and then check second player[1] against effected and so on.
 
