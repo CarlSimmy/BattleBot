@@ -2,6 +2,9 @@
 const Discord   = require('discord.js');
 const config    = require('./config.json');
 
+/* Node libs */
+const fs        = require('fs');
+
 /* JSON  lists */
 const events    = require('./events.json');
 const titles    = require('./titles.json');
@@ -26,6 +29,7 @@ var prevPlayerList = []; // Used for rematch functionality.
 var playerList = [];
 var deadPlayers = [];
 var gameStatus = { started: false };
+var betStatus = { open: false };
 var winsNeeded = -1;
 var currentRound = 0;
 
@@ -44,7 +48,8 @@ function addPlayer(id, name, title, url) {
         value: 0
       }
     },
-    wins: 0
+    wins: 0,
+    placedBets: []
   });
 };
 
@@ -56,11 +61,12 @@ const randomFrom = arr => {
 /* Rematch functionality */
 const startRematch = (message, winsNeeded) => {
   currentRound += 1;
+  prevPlayerList.forEach(player => player.placedBets = []);
   message.channel.send('_ _');
   message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
   message.channel.send('_ _');
   playerList = JSON.parse(JSON.stringify(prevPlayerList));
-  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats);
+  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus);
 }
 
 /* Bot start */
@@ -85,7 +91,7 @@ bot.on('message', async message => {
     commands(Discord, bot, message);
   }
 
-  /* COMMAND: Show personal profile for statistics */
+  /* COMMAND: Show personal profile for statistics/items */
   if ( command === 'profile' ) {
     if ( gameStatus.started ) return message.channel.send(`Please wait with checking your profile until the current game has ended ${message.author}!`).then(msg => msg.delete(5000));
     profile(Discord, message, stats);
@@ -114,17 +120,58 @@ bot.on('message', async message => {
     if ( gameStatus.started ) return message.channel.send(`Why are you trying to reset the game while it's running ${message.author}?`).then(msg => msg.delete(5000));
     reset(message, playerList, deadPlayers);
   }
+  
+  /* COMMAND: Betting function for games before every round starts */
+  if ( command === 'bet' ) { // TODO: ADD THIS TO ITS OWN BET FILE LATER
+    if ( !betStatus.open ) return message.channel.send(`You can only place bets before a round starts ${message.author}!`).then(msg => msg.delete(5000));
+
+    const betPlacer = message.author.id;
+
+    const betNumber = parseInt(args[0]);
+    const betAmount = parseInt(args[1]);
+    const betPlayer = playerList[betNumber - 1] // betNumber is typed out as 1, 2, 3 instead of 0, 1, 2, need to -1
+    
+    if ( !stats[betPlacer] ) { stats[betPlacer] = { wins: 0 }; }
+    if ( !stats[betPlacer].coins ) {
+      message.channel.send(`Looks like your first time betting ${message.author}. Have some coins to get started! (+100 coins)`).then(msg => msg.delete(5000));
+      stats[betPlacer].coins = 100;
+
+      fs.writeFile('./stats.json', JSON.stringify(stats), err => {
+        err && console.log(err);
+      });
+    };
+    
+    if ( !betPlayer ) {
+      message.channel.send(`Please select a valid player to bet on ${message.author}.`).then(msg => msg.delete(5000));
+    } else if ( stats[betPlacer].coins < betAmount ) {
+      message.channel.send(`Telling lies ${message.author}? You don't have enough coins for such a big bet!`).then(msg => msg.delete(5000));
+    } else if ( !Number.isInteger(betAmount) || betAmount <= 0 ) {
+      message.channel.send(`${message.author}, please enter a valid integer number above 0 to place a bet.`).then(msg => msg.delete(5000));
+    } else {
+      message.channel.send(`${message.author} just placed a bet worth ${betAmount} coins on **${betPlayer.name}**, fingers crossed!`).then(msg => msg.delete(5000));
+      stats[betPlacer].coins -= betAmount;
+      betPlayer.placedBets.push({placer: betPlacer, player: message.author, earnings: Math.ceil(betAmount * (playerList.length * 0.85))}); // More players = higher wins.
+      
+      fs.writeFile('./stats.json', JSON.stringify(stats), err => {
+        err && console.log(err);
+      });
+    }
+
+    //bet(message, betTarget, betAmount); 
+  }  
 
   /* COMMAND: Start the game loop */
   if ( command === 'start' ) {
-    currentRound = 1; // Always starting at round 1.
-    winsNeeded = args[0]; // For example !start 4 would make "4" the number of wins needed to win.
     if ( gameStatus.started ) return message.channel.send(`Chill out ${message.author}, the game has already started!`).then(msg => msg.delete(5000));
     if ( playerList.length < 2 ) return message.channel.send(`Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`).then(msg => msg.delete(7000));
+
+    currentRound = 1; // Always starting at round 1.
+    winsNeeded = args[0]; // For example !start 4 would make "4" the number of wins needed to win.
     prevPlayerList = JSON.parse(JSON.stringify(playerList)); // Deep copying array into new instance.
+
     message.channel.send(`**=========== Starting round ${currentRound}! ===========**`);
     message.channel.send('_ _');
-    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats);
+    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus);
   }
 
   /* COMMAND: Start a new game with the same players */

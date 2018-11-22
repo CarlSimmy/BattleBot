@@ -7,10 +7,13 @@ const generateTargetMessages = require('./startFunctions/generateTargetMessages'
 const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
 //const equipItems             = require('./startFunctions/equipItems');
 
-module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats ) => {
+module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus ) => {
   gameStatus.started = true;
+  betStatus.open = true;
 
   const startGameRound = async () => {
+    betStatus.open = false;
+
     /* Variables */
     let event = randomFrom(events); // A random event for this round.
     let eventPlayers = []; // All players for the current event.
@@ -80,6 +83,26 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList);
 
     if ( gameStatus.started === false ) {
+
+      /* Rewarding players with coins for wins. Maybe move to winnerEmbed? */
+      if ( roundWinner.id > 100 ) { // No coins for bot players
+        if ( !stats[roundWinner.id].coins ) { stats[roundWinner.id].coins = 0 }
+        stats[roundWinner.id].coins += 100;
+        message.channel.send(`Congratulations **${roundWinner.name}**, you won 100 coins!`);
+      }
+
+      /* Rewarding betting players with coins if they guessed correctly */
+      if ( roundWinner.placedBets.length > 0 ) {
+        roundWinner.placedBets.forEach(bet => {
+          stats[bet.placer].coins += bet.earnings;
+          message.channel.send(`Nice betting ${bet.player}, you just cashed in ${bet.earnings} coins!`);
+        })
+      }
+
+      fs.writeFile('./stats.json', JSON.stringify(stats), err => {
+        err && console.log(err);
+      });
+
       if ( roundWinner.wins < winsNeeded ) {
         return startRematch(message, winsNeeded);
       } else {
@@ -87,9 +110,15 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
       }
     }
 
-    message.channel.send('_ _'); // Outputs an empty line in Discord for some reason which makes messages easier to read.
+    message.channel.send('_ _'); // Outputs an empty line in Discord for some reason, this makes the messages easier to read.
     return setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
   }
 
-  startGameRound(); // Initial start of the game round.
+  message.channel.send('Place your bets now!');
+  message.channel.send('_ _');
+  playerList.forEach((player, idx) => {
+    message.channel.send(`**${player.name}** - !bet **${idx + 1}** [coins]`);
+  })
+  message.channel.send('_ _');
+  setTimeout(startGameRound, 25000); // Initial start of the game round.
 }
