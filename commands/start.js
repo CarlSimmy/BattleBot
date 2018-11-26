@@ -1,13 +1,17 @@
 const fs                     = require('fs');
 
+const outputBetLists         = require('./startFunctions/outputBetLists');
 const getPlayersForEvent     = require('./startFunctions/getPlayersForEvent');
 const updateHealthForPlayers = require('./startFunctions/updateHealthForPlayers');
 const replaceEventTargets    = require('./startFunctions/replaceEventTargets');
 const generateTargetMessages = require('./startFunctions/generateTargetMessages');
 const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
+const checkIfRoundFinished          = require('./startFunctions/checkIfRoundFinished');
 //const equipItems             = require('./startFunctions/equipItems');
 
 module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus ) => {
+
+  /* Check when game starts and when betting is available */
   gameStatus.started = true;
   betStatus.open = true;
 
@@ -45,7 +49,8 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     const clearPlayerLists = () => (playerList.length = 0, deadPlayers.length = 0);
     const breakArmor = targetPlayer => targetPlayer.equipment.armor = { name: '', value: 0 };
     const updatePlayerList = winningPlayer => winningPlayer.wins += 1;
-    const updatePrevPlayerList = winningPlayerId => prevPlayerList.find(player => player.id === winningPlayerId).wins += 1; // Add win to prevPlayerList before rematch
+    const updatePrevPlayerList = winningPlayerId => prevPlayerList.find(player => player.id === winningPlayerId).wins += 1; // Add win to prevPlayerList before rematch.
+    const initiateRematch = () => startRematch(message, winsNeeded); // Rematch function added here since roundFinished.js can't directly call index.js.
 
     /* If there are more targets than active players for the event, ignore and restart the game loop to pick a new */
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
@@ -78,66 +83,13 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     let effectedTargetsMessages = [];
     await generateTargetMessages(bot, event, eventPlayers, effectedTargetsMessages);
  
+    /* Output the messages for events and players dying/winning */
     await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList);
 
-    if ( gameStatus.started === false ) {
-
-      /* Rewarding players with coins for wins. Maybe move to winnerEmbed? */
-      if ( roundWinner.id > 100 ) { // No coins for bot players
-        if ( stats[roundWinner.id].coins == null ) { stats[roundWinner.id].coins = 0 }
-        const winnerPrice = Math.round(50 * (prevPlayerList.length * 0.65))
-        stats[roundWinner.id].coins += winnerPrice;
-        message.channel.send(`Congratulations **${roundWinner.name}**, you earned **${winnerPrice}** coins by winning! :money_mouth:`);
-      }
-
-      /* Rewarding betting players with coins if they guessed correctly */
-      if ( roundWinner.placedBets.length > 0 ) {
-        roundWinner.placedBets.forEach(bet => {
-          stats[bet.player.id].coins += bet.earnings;
-          message.channel.send(`Nice betting ${bet.player}, you just cashed in **${bet.earnings}** coins! :moneybag:`);
-        })
-      }
-
-      fs.writeFile('./stats.json', JSON.stringify(stats), err => {
-        err && console.log(err);
-      });
-
-      if ( roundWinner.wins < winsNeeded ) {
-        return startRematch(message, winsNeeded);
-      } else {
-        return message.channel.send(`Bow down to our new champion **${roundWinner.name}**!`);
-      }
-    }
-
-    message.channel.send('_ _'); // Outputs an empty line in Discord for some reason, this makes the messages easier to read.
-    return setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
+    /* At the end of every loop; If a round is finished, output winner, winning bets and check if there are still more rounds to play. If round is not finished, restart the game loop again */
+    await checkIfRoundFinished(message, gameStatus, roundWinner, stats, prevPlayerList, fs, winsNeeded, initiateRematch, startGameRound);
   }
 
-  let betMessage = 'Place your bets now! \n \n'; // To ouput one message instead of several which causes Discord to lag.
-  playerList.forEach((player, idx) => {
-    betMessage += `**${player.name}** - !bet **${idx + 1}** [coins] \n`;
-  })
-  message.channel.send(betMessage);
-  message.channel.send('_ _');
-
-  const closeBets = () => {
-    /* Close betting and output list of bets */
-    betStatus.open = false;
-    let betTable = '==== Bets placed for this round ==== \n \n';
-    playerList.forEach(player => {
-      if ( player.placedBets.length > 0 ) {
-        betTable += `-- ${player.name} -- \n`;
-        player.placedBets.forEach((bet, idx) => {
-          betTable += `${bet.player} bet: **${bet.amount}** coins \n`;
-          if ( idx === player.placedBets.length - 1 ) betTable += '\n'; // Add extra new line to last bet for better layout spacing.
-        })
-      }
-    })
-    message.channel.send(betTable);
-    message.channel.send('_ _');
-  }
-
-  setTimeout(closeBets, 25000)
-
-  setTimeout(startGameRound, 28000); // Initial start of the game round.
+  outputBetLists(message, playerList, betStatus); // Outputs players to bet on and placed bets before a round starts.
+  setTimeout(startGameRound, 28000); // Initial start of the game round, 3 secnds after outputting bet list.
 }

@@ -150,7 +150,7 @@ bot.on('message', async message => {
     } else if ( stats[betPlacer].coins < betAmount ) {
       message.channel.send(`Telling lies ${message.author}? You don't have enough coins for such a big bet!`).then(msg => msg.delete(7000));
     } else {
-      message.channel.send(`${message.author} just placed a bet worth ${betAmount} coins on **${betPlayer.name}**, fingers crossed!`).then(msg => msg.delete(5000));
+      message.channel.send(`${message.author} just placed a bet worth ${betAmount} coins on **${betPlayer.name}**, fingers crossed! :money_with_wings:`).then(msg => msg.delete(5000));
 
       stats[betPlacer].coins -= betAmount;
 
@@ -158,9 +158,9 @@ bot.on('message', async message => {
 
       if ( betPlacerIdx !== -1 ) { // If a player bets more than once on the same person, just sum it up instead of pushing new bet.
         betPlayer.placedBets[betPlacerIdx].amount += betAmount;
-        betPlayer.placedBets[betPlacerIdx].earnings += Math.round(betAmount * (playerList.length * 0.85));
+        betPlayer.placedBets[betPlacerIdx].earnings += Math.round(betAmount * (playerList.length * 0.6));
       } else {
-        betPlayer.placedBets.push({player: message.author, amount: betAmount, earnings: Math.round(betAmount * (playerList.length * 0.85))}); // More players = higher wins.
+        betPlayer.placedBets.push({player: message.author, amount: betAmount, earnings: Math.round(betAmount * (playerList.length * 0.6))}); // More players = higher wins.
       }      
       
       fs.writeFile('./stats.json', JSON.stringify(stats), err => {
