@@ -12,8 +12,6 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   betStatus.open = true;
 
   const startGameRound = async () => {
-    betStatus.open = false;
-
     /* Variables */
     let event = randomFrom(events); // A random event for this round.
     let eventPlayers = []; // All players for the current event.
@@ -86,16 +84,17 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
 
       /* Rewarding players with coins for wins. Maybe move to winnerEmbed? */
       if ( roundWinner.id > 100 ) { // No coins for bot players
-        if ( !stats[roundWinner.id].coins ) { stats[roundWinner.id].coins = 0 }
-        stats[roundWinner.id].coins += 100;
-        message.channel.send(`Congratulations **${roundWinner.name}**, you won 100 coins!`);
+        if ( stats[roundWinner.id].coins == null ) { stats[roundWinner.id].coins = 0 }
+        const winnerPrice = Math.round(50 * (prevPlayerList.length * 0.65))
+        stats[roundWinner.id].coins += winnerPrice;
+        message.channel.send(`Congratulations **${roundWinner.name}**, you earned **${winnerPrice}** coins by winning! :money_mouth:`);
       }
 
       /* Rewarding betting players with coins if they guessed correctly */
       if ( roundWinner.placedBets.length > 0 ) {
         roundWinner.placedBets.forEach(bet => {
-          stats[bet.placer].coins += bet.earnings;
-          message.channel.send(`Nice betting ${bet.player}, you just cashed in ${bet.earnings} coins!`);
+          stats[bet.player.id].coins += bet.earnings;
+          message.channel.send(`Nice betting ${bet.player}, you just cashed in **${bet.earnings}** coins! :moneybag:`);
         })
       }
 
@@ -114,11 +113,31 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     return setTimeout(startGameRound, 6000); // Run itself every 6 seconds.
   }
 
-  message.channel.send('Place your bets now!');
-  message.channel.send('_ _');
+  let betMessage = 'Place your bets now! \n \n'; // To ouput one message instead of several which causes Discord to lag.
   playerList.forEach((player, idx) => {
-    message.channel.send(`**${player.name}** - !bet **${idx + 1}** [coins]`);
+    betMessage += `**${player.name}** - !bet **${idx + 1}** [coins] \n`;
   })
+  message.channel.send(betMessage);
   message.channel.send('_ _');
-  setTimeout(startGameRound, 25000); // Initial start of the game round.
+
+  const closeBets = () => {
+    /* Close betting and output list of bets */
+    betStatus.open = false;
+    let betTable = '==== Bets placed for this round ==== \n \n';
+    playerList.forEach(player => {
+      if ( player.placedBets.length > 0 ) {
+        betTable += `-- ${player.name} -- \n`;
+        player.placedBets.forEach((bet, idx) => {
+          betTable += `${bet.player} bet: **${bet.amount}** coins \n`;
+          if ( idx === player.placedBets.length - 1 ) betTable += '\n'; // Add extra new line to last bet for better layout spacing.
+        })
+      }
+    })
+    message.channel.send(betTable);
+    message.channel.send('_ _');
+  }
+
+  setTimeout(closeBets, 25000)
+
+  setTimeout(startGameRound, 28000); // Initial start of the game round.
 }
