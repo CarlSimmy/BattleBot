@@ -1,5 +1,6 @@
 module.exports = ( roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList ) => {
   /* Every round message for each target effected */
+  message.channel.send('_ _');
   message.channel.send(roundMessage);
   effectedTargetsMessages.forEach(msg => {
     message.channel.send(`${msg}`);
