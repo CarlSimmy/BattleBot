@@ -42,3 +42,4 @@ node_modules
 dist*
 config.json
 .history
+lists
