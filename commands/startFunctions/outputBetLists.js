@@ -10,8 +10,9 @@ module.exports = ( message, playerList, betStatus, Discord ) => {
       if ( player.placedBets.length > 0 ) {
         if ( !areBetsPlaced ) areBetsPlaced = true;
         betTable += `__**${player.name}**__ \n`;
-        player.placedBets.forEach(bet=> {
-          betTable += `${bet.player} bet: **${bet.amount}** coins \n \n`;
+        player.placedBets.forEach((bet, idx) => {
+          betTable += `${bet.player} bet: **${bet.amount}** coins \n`;
+          if ( idx === player.placedBets.length - 1 ) betTable += `\n`; // Add extra newline to last player for layout purposes.
         })
       }
     })
