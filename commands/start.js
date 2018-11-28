@@ -40,7 +40,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
         stats[0].wins += 1;
       }
 
-      fs.writeFile('./stats.json', JSON.stringify(stats), err => { // File path is based from root "./stats.json"
+      fs.writeFile('./lists/stats.json', JSON.stringify(stats), err => {
         err && console.log(err);
       });
 

@@ -9,7 +9,7 @@ module.exports = ( message, args, playerList, stats, fs ) => {
     message.channel.send(`Looks like your first time betting ${message.author}. Have some coins to get started! (+100 coins)`).then(msg => msg.delete(7000));
     stats[betPlacer].coins = 100;
 
-    fs.writeFile('./stats.json', JSON.stringify(stats), err => {
+    fs.writeFile('./lists/stats.json', JSON.stringify(stats), err => {
       err && console.log(err);
     });
   };
@@ -36,7 +36,7 @@ module.exports = ( message, args, playerList, stats, fs ) => {
       betPlayer.placedBets.push({player: message.author, amount: betAmount, earnings: Math.round(betAmount * (playerList.length * 0.6))}); // More players = higher wins.
     }      
     
-    fs.writeFile('./stats.json', JSON.stringify(stats), err => {
+    fs.writeFile('./lists/stats.json', JSON.stringify(stats), err => {
       err && console.log(err);
     });
   }

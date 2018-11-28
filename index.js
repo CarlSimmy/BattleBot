@@ -6,10 +6,10 @@ const config    = require('./config.json');
 const fs        = require('fs');
 
 /* JSON  lists */
-const events    = require('./events.json');
-const titles    = require('./titles.json');
-const armors    = require('./armors.json');
-const stats     = require('./stats.json');
+const events    = require('./lists/events.json');
+const titles    = require('./lists/titles.json');
+const armors    = require('./lists/armors.json');
+const stats     = require('./lists/stats.json');
 
 /* On message commands */
 const commands  = require('./commands/commands.js');

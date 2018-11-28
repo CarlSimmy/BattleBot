@@ -16,7 +16,7 @@ module.exports = ( message, gameStatus, roundWinner, stats, prevPlayerList, fs, 
       })
     }
 
-    fs.writeFile('./stats.json', JSON.stringify(stats), err => {
+    fs.writeFile('./lists/stats.json', JSON.stringify(stats), err => {
       err && console.log(err);
     });
 
