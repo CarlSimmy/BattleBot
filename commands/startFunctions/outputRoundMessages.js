@@ -25,7 +25,7 @@ module.exports = ( roundMessage, effectedTargetsMessages, message, Discord, play
     const highestWins = Math.max(...deadPlayers.map(player => player.wins));
     const highestWinsPlayer = deadPlayers.find(player => player.wins === highestWins);
     
-    changeGameStatus(highestWinsPlayer);
+    changeGameStatus({id: -1, wins: -1, placedBets: []}); // Add fake player to prevent incorrect bet winners etc.
     return message.channel.send('**Looks like there were no winners this round!**');
   }
 
