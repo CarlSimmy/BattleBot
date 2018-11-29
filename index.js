@@ -54,9 +54,19 @@ function addPlayer( id, name, title, url ) {
   });
 };
 
-/* Get random value from an array */
-const randomFrom = arr => {
-  return arr[Math.floor(Math.random() * arr.length)];
+/* Get random value from an array and check against new arr to make sure that the value is unique */
+const randomUniqueFrom = ( fromArr, toArr = [] ) => {
+  const getRandom = () => fromArr[Math.floor(Math.random() * fromArr.length)];
+
+  let numTries = 0; // Just to make sure that it won't loop infinitely if there are no more possibilites.
+  let randomItem = getRandom();
+
+  while ( toArr.includes(randomItem) && numTries <= 100 ) {
+    randomItem = getRandom();
+    numTries++;
+  }
+
+  return randomItem;
 }
 
 /* Rematch functionality */
@@ -70,7 +80,7 @@ const startRematch = ( message, winsNeeded ) => {
     .setTitle(`Starting round ${currentRound}`)
   );
   playerList = JSON.parse(JSON.stringify(prevPlayerList));
-  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus);
+  start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomUniqueFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus);
 }
 
 /* Check if command is allowed to run and deleting player messages to prevent cluttering */
@@ -160,13 +170,13 @@ bot.on('message', async message => {
   /* COMMAND: The message author joins the game */
   if ( command === 'join' ) {
     if ( !shouldCommandRun(command, message) ) return;
-    join(message, playerList, titles, randomFrom, addPlayer);
+    join(message, playerList, titles, randomUniqueFrom, addPlayer);
   }
 
   /* COMMAND: Adding a random player to the game (randomuser.me) */
   if ( command === 'addbot' ) {
     if ( !shouldCommandRun(command, message) ) return;
-    addbot(message, playerList, titles, randomFrom, addPlayer);
+    addbot(message, playerList, titles, randomUniqueFrom, addPlayer);
   }
 
   /* COMMAND: List all players */
@@ -200,7 +210,7 @@ bot.on('message', async message => {
       .setColor('#428ff4')
       .setTitle(`Starting round ${currentRound}`)
     );
-    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus);
+    start(Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomUniqueFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus);
   }
 
   /* COMMAND: Start a new game with the same players */

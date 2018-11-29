@@ -6,10 +6,10 @@ const updateHealthForPlayers = require('./startFunctions/updateHealthForPlayers'
 const replaceEventTargets    = require('./startFunctions/replaceEventTargets');
 const generateTargetMessages = require('./startFunctions/generateTargetMessages');
 const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
-const checkIfRoundFinished          = require('./startFunctions/checkIfRoundFinished');
-//const equipItems             = require('./startFunctions/equipItems');
+const checkIfRoundFinished   = require('./startFunctions/checkIfRoundFinished');
+//const equipItems           = require('./startFunctions/equipItems');
 
-module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus ) => {
+module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomUniqueFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus ) => {
 
   /* Check when game starts and when betting is available */
   gameStatus.started = true;
@@ -17,16 +17,16 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
 
   const startGameRound = async () => {
     /* Variables */
-    let event = randomFrom(events); // A random event for this round.
+    let event = randomUniqueFrom(events); // A random event for this round.
     let eventPlayers = []; // All players for the current event.
-    let eventTargetIdxs = [];
+    let eventTargetIdxs = []; // Indices of effected targets in playerList.
     let playersDied = 0; // To check if a player died this round to type it out.
     let obtainedItem = {}; // To save item for print-out after obtained.
     let roundWinner = { wins: -1 }; // Winner of the current game round.
 
     /* Functions for settings variables from child components */
     const setEffectedTargets = effected => event.effectedTargets = effected; // If event targets ALL, update effected targets in events.json since there are no effected targets by default.
-    const increasePlayersDied = () => playersDied++;
+    const increasePlayersDied = () => playersDied++; // To check how many players died this round, used when outputting R.I.P messages.
     const changeGameStatus = winningPlayer => {
       roundWinner = winningPlayer;
       gameStatus.started = false;
@@ -56,7 +56,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
 
     /* Getting random players for the current event */
-    await getPlayersForEvent(event, eventPlayers, randomFrom, playerList, setEffectedTargets, eventTargetIdxs);
+    await getPlayersForEvent(event, eventPlayers, randomUniqueFrom, playerList, setEffectedTargets, eventTargetIdxs);
 
     /* När man blir trollad till en zebra ser man ut som en zebra */
     if ( event.description.includes("till en zebra") ) {
@@ -66,7 +66,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   
     /* Equipping item, should be in own function when bigger */
     if ( event.itemType ) {
-      obtainedItem = await randomFrom(armors);
+      obtainedItem = await randomUniqueFrom(armors);
       playerList[eventTargetIdxs[0]].equipment.armor.name = obtainedItem.name;
       playerList[eventTargetIdxs[0]].equipment.armor.value = obtainedItem.value;
     }

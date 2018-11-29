@@ -1,10 +1,10 @@
 const fetch = require('node-fetch');
 
-module.exports = ( message, playerList, titles, randomFrom, addPlayer ) => {
+module.exports = ( message, playerList, titles, randomUniqueFrom, addPlayer ) => {
   let id = 1;
   let name = '';
   let health = 100;
-  let title = randomFrom(titles);
+  let title = randomUniqueFrom(titles);
   let avatar = '';
 
   while ( playerList.map(player => ( player.id )).includes(id) ) {
