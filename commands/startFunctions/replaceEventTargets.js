@@ -1,15 +1,13 @@
-module.exports = ( event, eventPlayers, obtainedItem ) => {
+module.exports = ( event, playerList, eventTargetIdxs, obtainedItem ) => {
   let activeTarget = -1; // Increasing counter to replace <player> with first active target, then second etc.
 
   let replacedEvent = event.description.trim().split(/[ ]+/).map(word => {
     if ( word === '<player>' ) {
-      activeTarget++; // To be able to check first player[0] against effected (which can be player[2]) and then check second player[1] against effected and so on.
-
-      /* If first player is an effected target type it out with underline */
-      for ( let i = 0; i < event.effectedTargets.length; i++ ) {            
-        if ( eventPlayers[activeTarget] === eventPlayers[event.effectedTargets[i]] ) return `__**${eventPlayers[activeTarget].name}**__`;
+      activeTarget++;
+      if ( event.effectedTargets[activeTarget] === activeTarget ) { // If the player is an effected target, add underline.
+        return `__**${playerList[eventTargetIdxs[activeTarget]].name}**__`
       }
-      return `**${eventPlayers[activeTarget].name}**`; // If the first player is not a target
+      return `**${playerList[eventTargetIdxs[activeTarget]].name}**`
     } else if ( word === '<item>' ) {
       return `**${obtainedItem.name}**`;
     } else {

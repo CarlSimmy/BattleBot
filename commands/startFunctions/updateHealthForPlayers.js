@@ -1,6 +1,4 @@
-module.exports = ( event, playerList, deadPlayers, increasePlayersDied, breakArmor, eventTargetIdxs ) => {
-  let tempDeadPlayers = []; // For keeping track of dead players before removing them from the playerList.
-
+module.exports = ( event, playerList, increasePlayersDied, breakArmor, eventTargetIdxs ) => {
   const changePlayerHealth = (currentTarget, eventChange) => {
     let healthChange = eventChange + currentTarget.equipment.armor.value;
     if ( eventChange > 0 ) healthChange = eventChange;
@@ -9,8 +7,8 @@ module.exports = ( event, playerList, deadPlayers, increasePlayersDied, breakArm
     currentTarget.equipment.armor.value <= 0 && breakArmor(currentTarget); // Remove armor if it takes more damage than its value.
   }
 
-  for ( let i = 0; i < eventTargetIdxs.length; i++ ) {
-    let currentTarget = playerList[eventTargetIdxs[i]];
+  for ( let i = 0; i < event.effectedTargets.length; i++ ) {
+    let currentTarget = playerList[eventTargetIdxs[event.effectedTargets[i]]];
     
     if ( event.targets !== 'all' ) {
       changePlayerHealth(currentTarget, event.healthChange[i]);
@@ -20,14 +18,10 @@ module.exports = ( event, playerList, deadPlayers, increasePlayersDied, breakArm
 
     if ( currentTarget.health > 100 ) currentTarget.health = 100;        
 
-    /* When a player dies move them from playerList -> deadPlayers and set how many players died this round to send R.I.P messages
-        Very important; This means that eventPlayers will still be remaning and can be read to type out data while a player from playerList is removed. */
+    /* When a player dies, track it to see how many died for this specific round when outputting R.I.P messages later */
     if ( currentTarget.health <= 0 ) {
       currentTarget.health = 0;
-      tempDeadPlayers.push(currentTarget);
       increasePlayersDied();
     }
   }
-
-  tempDeadPlayers.forEach(player => deadPlayers.push(...playerList.splice(playerList.indexOf(player), 1)));
 }

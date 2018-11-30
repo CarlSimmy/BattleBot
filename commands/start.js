@@ -18,7 +18,6 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   const startGameRound = async () => {
     /* Variables */
     let event = randomUniqueFrom(events); // A random event for this round.
-    let eventPlayers = []; // All players for the current event.
     let eventTargetIdxs = []; // Indices of effected targets in playerList.
     let playersDied = 0; // To check if a player died this round to type it out.
     let obtainedItem = {}; // To save item for print-out after obtained.
@@ -56,7 +55,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
 
     /* Getting random players for the current event */
-    await getPlayersForEvent(event, eventPlayers, randomUniqueFrom, playerList, setEffectedTargets, eventTargetIdxs);
+    await getPlayersForEvent(event, randomUniqueFrom, playerList, setEffectedTargets, eventTargetIdxs);
 
     /* När man blir trollad till en zebra ser man ut som en zebra */
     if ( event.description.includes("till en zebra") ) {
@@ -73,16 +72,22 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
 
     /* Update health for effected targets and remove dead players */
     if ( !event.itemType ) {
-      await updateHealthForPlayers(event, playerList, deadPlayers, increasePlayersDied, breakArmor, eventTargetIdxs);
+      await updateHealthForPlayers(event, playerList, increasePlayersDied, breakArmor, eventTargetIdxs);
     }    
 
     /* Creating the event by replacing targets with the correct targeted players names */
-    let roundMessage = await replaceEventTargets(event, eventPlayers, obtainedItem);
+    let roundMessage = await replaceEventTargets(event, playerList, eventTargetIdxs, obtainedItem);
 
     /* Generate messages for HP loss/gain and show life bars */
     let effectedTargetsMessages = [];
-    await generateTargetMessages(bot, event, eventPlayers, effectedTargetsMessages);
+    await generateTargetMessages(bot, event, playerList, eventTargetIdxs, effectedTargetsMessages);
  
+    playerList.forEach((player, idx) => {
+      if ( player.health <= 0 ) {
+        deadPlayers.push(...playerList.splice(idx, 1));
+      }
+    })
+
     /* Output the messages for events and players dying/winning */
     await outputRoundMessages(roundMessage, effectedTargetsMessages, message, Discord, playersDied, deadPlayers, playerList, changeGameStatus, updatePlayerList, updatePrevPlayerList);
 

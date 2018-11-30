@@ -1,4 +1,4 @@
-module.exports = ( bot, event, eventPlayers, effectedTargetsMessages ) => {
+module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessages ) => {
   const health0 = bot.emojis.find(emoji => emoji.name === 'health0');
   const health5 = bot.emojis.find(emoji => emoji.name === 'health5');
   const health10 = bot.emojis.find(emoji => emoji.name === 'health10');
@@ -14,9 +14,9 @@ module.exports = ( bot, event, eventPlayers, effectedTargetsMessages ) => {
   const armor25 = bot.emojis.find(emoji => emoji.name === 'armor25');
 
   event.effectedTargets.forEach((target, idx) => {
-    let targetHealth = eventPlayers[target].health;
-    let targetName = eventPlayers[target].name;
-    let targetArmor = eventPlayers[target].equipment.armor.value;
+    let targetHealth = playerList[eventTargetIdxs[target]].health;
+    let targetName = playerList[eventTargetIdxs[target]].name;
+    let targetArmor = playerList[eventTargetIdxs[target]].equipment.armor.value;
 
     /* Ticks for health to display a health bar based on 5's  */
     let healthTicks = Math.round(targetHealth / 5) * 5;
