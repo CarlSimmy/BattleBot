@@ -82,6 +82,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     let effectedTargetsMessages = [];
     await generateTargetMessages(bot, event, playerList, eventTargetIdxs, effectedTargetsMessages);
  
+    /* Moving dead players before outputting round messages */
     playerList.forEach((player, idx) => {
       if ( player.health <= 0 ) {
         deadPlayers.push(...playerList.splice(idx, 1));
