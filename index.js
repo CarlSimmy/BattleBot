@@ -155,6 +155,8 @@ bot.on('message', async message => {
     command = args.shift().toLowerCase();
   }
 
+  //console.log(message.content); // Gets ID of tag e.g. @aiudex in <@id> format
+
   /* COMMAND: Show information and available commands */
   if ( command === 'commands' ) {
     if ( !shouldCommandRun(command, message) ) return; // If command is not supposed to run atm, return out.

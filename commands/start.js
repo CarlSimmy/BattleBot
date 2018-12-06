@@ -15,9 +15,9 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   gameStatus.started = true;
   betStatus.open = true;
 
-  const startGameRound = async () => {
+  const startGameRound = async(nextEvent = false, nextPlayer = false) => {
     /* Variables */
-    let event = randomUniqueFrom(events); // A random event for this round.
+    let event = nextEvent ? nextEvent : randomUniqueFrom(events); // A random event for this round.
     let eventTargetIdxs = []; // Indices of effected targets in playerList.
     let playersDied = 0; // To check if a player died this round to type it out.
     let obtainedItem = {}; // To save item for print-out after obtained.
@@ -55,7 +55,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
 
     /* Getting random players for the current event */
-    await getPlayersForEvent(event, randomUniqueFrom, playerList, setEffectedTargets, eventTargetIdxs);
+    await getPlayersForEvent(event, randomUniqueFrom, playerList, setEffectedTargets, eventTargetIdxs, nextPlayer);
 
     /* När man blir trollad till en zebra ser man ut som en zebra */
     if ( event.description.includes("till en zebra") ) {
@@ -65,18 +65,77 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   
     /* Equipping item, should be in own function when bigger */
     if ( event.itemType ) {
-      obtainedItem = await randomUniqueFrom(armors);
+      event.armor ? obtainedItem = event.armor : obtainedItem = await randomUniqueFrom(armors); // Check if there is a specified armor or not for the event.
       playerList[eventTargetIdxs[0]].equipment.armor.name = obtainedItem.name;
       playerList[eventTargetIdxs[0]].equipment.armor.value = obtainedItem.value;
     }
+
+    /* Creating the event by replacing targets with the correct targeted players names */
+    let roundMessage = await replaceEventTargets(event, playerList, eventTargetIdxs, obtainedItem);
+
+
+
+    /* GET OWN FUNCTION FOR FOLLOWUPEVENTS HERE. SKRIV UT VILKEN TARGET EN BOT TAR OCKSÅ?? */
+    const makeChoice = (eventPlayerId, chosenPlayer) => {
+      let isTargetChosen = false;
+
+      bot.on('message', async message => {
+        if ( message.author.bot || message.channel.type === 'dm' ) return;
+
+        const args = message.content.slice(1).trim().split(/ +/g);
+        let command = '';
+        if ( message.content[0] === '!' ) {
+          command = args.shift().toLowerCase();
+        }
+
+        let chosenPlayerNumber = parseInt(args[0]);
+
+        if ( command === 'use' && message.author.id === eventPlayerId && chosenPlayerNumber > 0 && chosenPlayerNumber <= playerList.length && !isTargetChosen ) {          
+          isTargetChosen = true;
+          chosenPlayer = playerList[chosenPlayerNumber - 1];
+          message.channel.send(`${message.author} decides to target ${chosenPlayer.name}!`);
+        }
+      });
+
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(chosenPlayer)
+        }, 19000);
+      })
+    }  
+
+   if ( event.followUpEvents ) {
+      const newEvent = randomUniqueFrom(event.followUpEvents); // The new event.
+      const eventPlayerId = playerList[eventTargetIdxs[0]].id; // The player which received the event.
+      let chosenPlayer = playerList[Math.floor(Math.random() * playerList.length)]; // Random player if none is picked.
+      
+      message.channel.send('_ _');
+      message.channel.send(roundMessage);
+
+      let playerChoiceList = '**Choose which player to target** \n \n';
+      playerList.forEach((player, idx) => {
+        playerChoiceList += `__**${player.name}**__ - !use **${idx + 1}** \n \n`;
+      })
+    
+      message.channel.send(
+        new Discord.RichEmbed()
+          .setColor('#C5B358')
+          .setDescription(playerChoiceList)
+      );
+
+      chosenPlayer = await makeChoice(eventPlayerId, chosenPlayer);
+      startGameRound(newEvent, chosenPlayer);
+      return;
+    }
+
+
+
+    
 
     /* Update health for effected targets and remove dead players */
     if ( !event.itemType ) {
       await updateHealthForPlayers(event, playerList, increasePlayersDied, breakArmor, eventTargetIdxs);
     }    
-
-    /* Creating the event by replacing targets with the correct targeted players names */
-    let roundMessage = await replaceEventTargets(event, playerList, eventTargetIdxs, obtainedItem);
 
     /* Generate messages for HP loss/gain and show life bars */
     let effectedTargetsMessages = [];
