@@ -93,14 +93,18 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
         if ( command === 'use' && message.author.id === eventPlayerId && chosenPlayerNumber > 0 && chosenPlayerNumber <= playerList.length && !isTargetChosen ) {          
           isTargetChosen = true;
           chosenPlayer = playerList[chosenPlayerNumber - 1];
-          message.channel.send(`${message.author} decides to target ${chosenPlayer.name}!`);
+          if ( chosenPlayer.id === eventPlayerId ) {
+            message.channel.send(`${message.author} decides to target himself!`);            
+          } else {
+            message.channel.send(`${message.author} decides to target ${chosenPlayer.name}!`);
+          }
         }
       });
 
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(chosenPlayer)
-        }, 19000);
+        }, 17000);
       })
     }  
 
