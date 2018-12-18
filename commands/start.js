@@ -159,6 +159,6 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     await checkIfRoundFinished(message, gameStatus, roundWinner, stats, prevPlayerList, fs, winsNeeded, initiateRematch, startGameRound);
   }
 
-  outputBetLists(message, playerList, betStatus, Discord); // Outputs players to bet on and placed bets before a round starts.
+  outputBetLists(message, playerList, betStatus, Discord, stats); // Outputs players to bet on and placed bets before a round starts.
   setTimeout(startGameRound, 30000); // Initial start of the game round, 5 seconds after outputting bet list.
 }
