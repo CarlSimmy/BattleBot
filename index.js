@@ -84,7 +84,7 @@ const startRematch = ( message, winsNeeded ) => {
 }
 
 /* Check if command is allowed to run and deleting player messages to prevent cluttering */
-const shouldCommandRun = ( command, message ) => {
+const shouldCommandRun = ( command, message, gameAmount = 0 ) => {
   let shouldRun = true;
   let botMessage = '';
   
@@ -123,6 +123,10 @@ const shouldCommandRun = ( command, message ) => {
       botMessage = `Chill out ${message.author}, the game has already started!`;
       if ( playerList.length < 2 ) {
         botMessage = `Not enough players have joined to start the game. Psst... If you're all alone ${message.author} it's possible to fake some friends with !addbot.`;
+        shouldRun = false;
+      }
+      if ( gameAmount > 5 ) {
+        botMessage = `Sorry ${message.author}, but you can't set wins to more than 5 games... maybe others want to play as well?`;
         shouldRun = false;
       }
       break;
@@ -201,7 +205,7 @@ bot.on('message', async message => {
 
   /* COMMAND: Start the game loop */
   if ( command === 'start' ) {
-    if ( !shouldCommandRun(command, message) ) return;
+    if ( !shouldCommandRun(command, message, args[0]) ) return;
 
     currentRound = 1; // Always starting at round 1.
     winsNeeded = args[0]; // For example !start 4 would make "4" the number of wins needed to win.
