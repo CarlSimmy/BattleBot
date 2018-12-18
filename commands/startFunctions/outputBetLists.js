@@ -34,7 +34,7 @@ module.exports = ( message, playerList, betStatus, Discord, stats ) => {
 
   let betMessage = '**Place your bets now!** \n \n'; // Add to one message instead of outputting multiple causing Discord to lag.
   playerList.forEach((player, idx) => {
-    betMessage += `__**${player.name}**__ *(${stats[player.id] ? stats[player.id].coins : 0} coins)* - !bet **${idx + 1}** [amount] \n \n`;
+    betMessage += `__**${player.name}**__ *(${stats[player.id] ? stats[player.id].coins : 0} coins)* - !bet **${idx + 1}** [amount/all] \n \n`;
   })
 
   message.channel.send(
