@@ -7,6 +7,7 @@ const replaceEventTargets    = require('./startFunctions/replaceEventTargets');
 const generateTargetMessages = require('./startFunctions/generateTargetMessages');
 const outputRoundMessages    = require('./startFunctions/outputRoundMessages');
 const checkIfRoundFinished   = require('./startFunctions/checkIfRoundFinished');
+const followUpEvent          = require('./startFunctions/followUpEvent');
 //const equipItems           = require('./startFunctions/equipItems');
 
 module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList, deadPlayers, randomUniqueFrom, prevPlayerList, winsNeeded, startRematch, stats, betStatus ) => {
@@ -52,7 +53,7 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     const initiateRematch = () => startRematch(message, winsNeeded); // Rematch function added here since roundFinished.js can't directly call index.js.
 
     /* If there are more targets than active players for the event, ignore and restart the game loop to pick a new */
-    if ( (event.targets > playerList.length) && event.targets !== 'all' ) { startGameRound(); return; }
+    if ( (event.targets > playerList.length) && event.targets !== 'all' ) return startGameRound();
 
     /* Getting random players for the current event */
     await getPlayersForEvent(event, randomUniqueFrom, playerList, setEffectedTargets, eventTargetIdxs, nextPlayer);
@@ -73,68 +74,12 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
     /* Creating the event by replacing targets with the correct targeted players names */
     let roundMessage = await replaceEventTargets(event, playerList, eventTargetIdxs, obtainedItem);
 
-
-
-    /* GET OWN FUNCTION FOR FOLLOWUPEVENTS HERE. SKRIV UT VILKEN TARGET EN BOT TAR OCKSÅ?? */
-    const makeChoice = (eventPlayerId, chosenPlayer) => {
-      let isTargetChosen = false;
-
-      bot.on('message', async message => {
-        if ( message.author.bot || message.channel.type === 'dm' ) return;
-
-        const args = message.content.slice(1).trim().split(/ +/g);
-        let command = '';
-        if ( message.content[0] === '!' ) {
-          command = args.shift().toLowerCase();
-        }
-
-        let chosenPlayerNumber = parseInt(args[0]);
-
-        if ( command === 'use' && message.author.id === eventPlayerId && chosenPlayerNumber > 0 && chosenPlayerNumber <= playerList.length && !isTargetChosen ) {          
-          isTargetChosen = true;
-          chosenPlayer = playerList[chosenPlayerNumber - 1];
-          if ( chosenPlayer.id === eventPlayerId ) {
-            message.channel.send(`${message.author} decides to target himself!`);            
-          } else {
-            message.channel.send(`${message.author} decides to target ${chosenPlayer.name}!`);
-          }
-        }
-      });
-
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(chosenPlayer)
-        }, 17000);
-      })
-    }  
-
-   if ( event.followUpEvents ) {
-      const newEvent = randomUniqueFrom(event.followUpEvents); // The new event.
-      const eventPlayerId = playerList[eventTargetIdxs[0]].id; // The player which received the event.
-      let chosenPlayer = playerList[Math.floor(Math.random() * playerList.length)]; // Random player if none is picked.
-      
-      message.channel.send('_ _');
-      message.channel.send(roundMessage);
-
-      let playerChoiceList = '**Choose which player to target** \n \n';
-      playerList.forEach((player, idx) => {
-        playerChoiceList += `__**${player.name}**__ - !use **${idx + 1}** \n \n`;
-      })
-    
-      message.channel.send(
-        new Discord.RichEmbed()
-          .setColor('#C5B358')
-          .setDescription(playerChoiceList)
-      );
-
-      chosenPlayer = await makeChoice(eventPlayerId, chosenPlayer);
-      startGameRound(newEvent, chosenPlayer);
-      return;
+    /* If there is a follow-up to the event, wait for it to play out before continuing */
+    if ( event.followUpEvents ) {
+      // TODO: Skriv ut vilken target en bot väljer?
+      let newData = await followUpEvent(bot, Discord, message, randomUniqueFrom, event, roundMessage, playerList, eventTargetIdxs, startGameRound);
+      return startGameRound(newData.event, newData.player);
     }
-
-
-
-    
 
     /* Update health for effected targets and remove dead players */
     if ( !event.itemType ) {
@@ -160,5 +105,5 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   }
 
   outputBetLists(message, playerList, betStatus, Discord, stats); // Outputs players to bet on and placed bets before a round starts.
-  setTimeout(startGameRound, 30000); // Initial start of the game round, 5 seconds after outputting bet list.
+  setTimeout(startGameRound, 2000); // Initial start of the game round, 5 seconds after outputting bet list.
 }
