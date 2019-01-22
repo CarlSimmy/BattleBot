@@ -76,7 +76,6 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
 
     /* If there is a follow-up to the event, wait for it to play out before continuing */
     if ( event.followUpEvents ) {
-      // TODO: Skriv ut vilken target en bot väljer?
       let newData = await followUpEvent(bot, Discord, message, randomUniqueFrom, event, roundMessage, playerList, eventTargetIdxs, startGameRound);
       return startGameRound(newData.event, newData.player);
     }
