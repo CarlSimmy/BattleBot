@@ -5,6 +5,7 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
   const health15 = bot.emojis.find(emoji => emoji.name === 'health15');
   const health20 = bot.emojis.find(emoji => emoji.name === 'health20');
   const health25 = bot.emojis.find(emoji => emoji.name === 'health25');
+  // TODO: Lägg till röda bars med HP 5->25 för att kunna visa typ 125/130hp <- 5 extra hp max
 
   const armor0 = ''; // Don't need to show anything for armor0, just define it.
   const armor5 = bot.emojis.find(emoji => emoji.name === 'armor5');
@@ -15,6 +16,7 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
 
   event.effectedTargets.forEach((target, idx) => {
     let targetHealth = playerList[eventTargetIdxs[target]].health;
+    let targetMaxHealth = playerList[eventTargetIdxs[target]].maxHealth;
     let targetName = playerList[eventTargetIdxs[target]].name;
     let targetArmor = playerList[eventTargetIdxs[target]].equipment.armor.value;
 
@@ -25,13 +27,24 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
     let armorTicks = Math.round(targetArmor / 5) * 5;
     if ( armorTicks <= 0 && targetArmor > 0 ) armorTicks = 5;
 
-    /* Health bar made up of 4 emojis consisting of 25hp each to display the HP correctly */
-    let healthBar = `${health25}${health25}${health25}${health25}`;
-    if ( healthTicks > 100 ) { healthBar = `${health25}${health25}${health25}${health25}${eval('health' + (healthTicks - 100))}`; }
-    if ( healthTicks >= 75 && healthTicks <= 100 ) { healthBar = `${health25}${health25}${health25}${eval('health' + (healthTicks - 75))}`; }
-    if ( healthTicks >= 50 && healthTicks < 75 ) { healthBar = `${health25}${health25}${eval('health' + (healthTicks - 50))}${health0}`; }
-    if ( healthTicks >= 25 && healthTicks < 50 ) { healthBar = `${health25}${eval('health' + (healthTicks - 25))}${health0}${health0}`; }
-    if ( healthTicks >= 0 && healthTicks < 25 ) { healthBar = `${eval('health' + healthTicks)}${health0}${health0}${health0}`; }
+    /* Health bar made up of emojis consisting of 25hp each to display the HP correctly */
+    let healthBar = '';
+    let numFullBars = Math.floor(healthTicks / 25); // Number of full healthBars.
+    let numEmptyBars = Math.floor((targetMaxHealth / 25) - (healthTicks / 25)); // Number of bars possible to fill up.
+    let overflowHealth = healthTicks - (numFullBars * 25);
+
+    // TODO: Lägg till tomma healthbars med mindre än 25hp i slutet.
+    for ( let i = 0; i < numFullBars; i++ ) {
+      healthBar += health25;
+    }
+
+    if ( overflowHealth > 0 ) {
+      healthBar += `${eval('health' + overflowHealth)}`;
+    }
+
+    for ( let i = 0; i < numEmptyBars; i++ ) {
+      healthBar += health0;
+    }
 
     let armorBar = '';
     if ( targetArmor > 0 ) {
@@ -48,11 +61,11 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
           effectedTargetsMessages.push(`${targetName}  \u21E7*${Math.abs(targetArmor)} ARMOR*   ${healthBar} ${armorBar}`);
           break;
         default:
-          effectedTargetsMessages.push(`${targetName}  ${event.healthChange[idx] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[idx])}HP*   ${healthBar} ${armorBar}`);
+          effectedTargetsMessages.push(`${targetName}  ${event.healthChange[idx] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[idx])}${event.type === 'persistent' ? ' MAX ' : ''}HP*   ${healthBar} ${armorBar}`);
           break;
       }
     } else {
-      effectedTargetsMessages.push(`${targetName}  ${event.healthChange[0] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[0])}HP*   ${healthBar} ${armorBar}`);
+      effectedTargetsMessages.push(`${targetName}  ${event.healthChange[0] > 0 ? '\u21E7' : '\u21E9'}*${Math.abs(event.healthChange[0])}${event.type === 'persistent' ? ' MAX ' : ''}HP*   ${healthBar} ${armorBar}`);
     }    
   })
 }
