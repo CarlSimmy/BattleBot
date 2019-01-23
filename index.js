@@ -40,6 +40,7 @@ function addPlayer( id, name, title, url ) {
   playerList.push({
     id,
     health: 100,
+    maxHealth: 100,
     name,
     title,
     url,

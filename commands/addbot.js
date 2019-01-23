@@ -3,7 +3,6 @@ const fetch = require('node-fetch');
 module.exports = ( message, playerList, titles, randomUniqueFrom, addPlayer ) => {
   let id = 1;
   let name = '';
-  let health = 100;
   let title = randomUniqueFrom(titles);
   let avatar = '';
 
