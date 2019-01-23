@@ -104,5 +104,5 @@ module.exports = ( Discord, bot, message, events, armors, gameStatus, playerList
   }
 
   outputBetLists(message, playerList, betStatus, Discord, stats); // Outputs players to bet on and placed bets before a round starts.
-  setTimeout(startGameRound, 2000); // Initial start of the game round, 5 seconds after outputting bet list.
+  setTimeout(startGameRound, 30000); // Initial start of the game round, 5 seconds after outputting bet list.
 }
