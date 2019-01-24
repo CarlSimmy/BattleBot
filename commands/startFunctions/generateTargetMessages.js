@@ -5,7 +5,12 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
   const health15 = bot.emojis.find(emoji => emoji.name === 'health15');
   const health20 = bot.emojis.find(emoji => emoji.name === 'health20');
   const health25 = bot.emojis.find(emoji => emoji.name === 'health25');
-  // TODO: Lägg till röda bars med HP 5->25 för att kunna visa typ 125/130hp <- 5 extra hp max
+
+  const maxHealth5 = bot.emojis.find(emoji => emoji.name === 'maxhealth5');
+  const maxHealth10 = bot.emojis.find(emoji => emoji.name === 'maxhealth10');
+  const maxHealth15 = bot.emojis.find(emoji => emoji.name === 'maxhealth15');
+  const maxHealth20 = bot.emojis.find(emoji => emoji.name === 'maxhealth20');
+  const maxHealth25 = bot.emojis.find(emoji => emoji.name === 'maxhealth25');
 
   const armor0 = ''; // Don't need to show anything for armor0, just define it.
   const armor5 = bot.emojis.find(emoji => emoji.name === 'armor5');
@@ -24,6 +29,9 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
     let healthTicks = Math.round(targetHealth / 5) * 5;
     if ( healthTicks === 0 && targetHealth > 0 ) healthTicks = 5;
 
+    let maxHealthTicks = Math.round(targetMaxHealth / 5) * 5;
+    if ( maxHealthTicks === 0 && targetMaxHealth > 0 ) maxHealthTicks = 5;
+
     let armorTicks = Math.round(targetArmor / 5) * 5;
     if ( armorTicks <= 0 && targetArmor > 0 ) armorTicks = 5;
 
@@ -31,19 +39,23 @@ module.exports = ( bot, event, playerList, eventTargetIdxs, effectedTargetsMessa
     let healthBar = '';
     let numFullBars = Math.floor(healthTicks / 25); // Number of full healthBars.
     let numEmptyBars = Math.floor((targetMaxHealth / 25) - (healthTicks / 25)); // Number of bars possible to fill up.
+    if ( numEmptyBars < 0 ) numEmptyBars = 0; // To prevent minus bars.
     let overflowHealth = healthTicks - (numFullBars * 25);
+    let numOverflowHealthBars = overflowHealth > 0 ? 1 : 0;
+    let overflowMaxHealth = maxHealthTicks - ((numFullBars + numOverflowHealthBars + numEmptyBars) * 25);
 
-    // TODO: Lägg till tomma healthbars med mindre än 25hp i slutet.
     for ( let i = 0; i < numFullBars; i++ ) {
       healthBar += health25;
     }
-
     if ( overflowHealth > 0 ) {
       healthBar += `${eval('health' + overflowHealth)}`;
     }
 
     for ( let i = 0; i < numEmptyBars; i++ ) {
       healthBar += health0;
+    }
+    if ( overflowMaxHealth > 0 ) {
+      healthBar += `${eval('maxHealth' + overflowMaxHealth)}`;
     }
 
     let armorBar = '';
