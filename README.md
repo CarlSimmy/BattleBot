@@ -1,3 +1,3 @@
 # Abandoned
 
-New active version: https://github.com/CarlSimmy/DiscordRoyale
+New maintained version @ https://github.com/CarlSimmy/DiscordRoyale
